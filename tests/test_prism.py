@@ -73,6 +73,18 @@ class TestNoPrivateContent(unittest.TestCase):
                     hits.append("%s → %s" % (os.path.relpath(path, ROOT), term))
         self.assertEqual(hits, [], u"包里有不该公开的内容：\n  " + "\n  ".join(hits))
 
+    def test_libraries_have_no_project_bookkeeping(self):
+        """动作库里不该留「这个动作属于哪个私下项目」的标记 —— 对公开用户无意义。"""
+        import json as _json
+        path = os.path.join(ROOT, "references", "motion-library.json")
+        d = _json.load(io.open(path, encoding="utf-8"))
+        bad = [m.get("id") for m in d.get("motions", []) if "project" in m]
+        self.assertEqual(bad, [], u"动作库里还有项目私有标记：%s" % bad)
+        for m in d.get("motions", []):
+            note = m.get("note") or ""
+            self.assertNotIn(u"该形象", note,
+                             u"%s 的 note 还带着被抹掉的痕迹：%s" % (m.get("id"), note))
+
     def test_no_absolute_local_paths_outside_config(self):
         """除了 config/defaults.yaml（用户可以改的默认值），别处不写死本机路径。"""
         hits = []
