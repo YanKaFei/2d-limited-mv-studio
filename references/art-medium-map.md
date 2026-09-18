@@ -1,6 +1,6 @@
 # 媒介表与艺术语汇（art-aesthetic-vault 不可用时的降级版）
 
-> 首选永远是用 `scripts/prism.py styles` 查本机的 art-aesthetic-vault
+> 首选永远是用 `scripts/mvstudio.py styles` 查本机的 art-aesthetic-vault
 > （147 个流派，含分层提示词）。这份表是**降级**：
 > 手法正确，但流派术语不如库中精确。
 > AGENTS.md 的硬规则：**不要凭记忆编造流派术语。**

@@ -327,8 +327,8 @@ def render_md(menu, chosen_id=None):
     lines.append(u"## 怎么选 / How to choose")
     lines.append("")
     lines.append(u"```bash")
-    lines.append(u"python3 scripts/prism.py endings --pick reach_and_crack")
-    lines.append(u"python3 scripts/prism.py confirm --step ending")
+    lines.append(u"python3 scripts/mvstudio.py endings --pick reach_and_crack")
+    lines.append(u"python3 scripts/mvstudio.py confirm --step ending")
     lines.append(u"```")
     lines.append("")
     lines.append(u"> ⚠️ 所有收尾都**不允许改变人物身份**：不许融化、变粒子、换脸、换服装。"
@@ -370,7 +370,7 @@ def main(argv=None):
                           render_md(menu, chosen_id=args.pick))
         e = get(args.pick)
         common.echo(u"已选收尾：%s / %s" % (e["name_zh"], e["name_en"]))
-        common.echo(u"  然后确认这一步：python3 scripts/prism.py confirm --step ending")
+        common.echo(u"  然后确认这一步：python3 scripts/mvstudio.py confirm --step ending")
         return 0
 
     md = render_md(menu)

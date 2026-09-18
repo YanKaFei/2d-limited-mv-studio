@@ -238,7 +238,7 @@ def render_md(spec, canon, negative=None, checklist=None):
     lines.append("## 六、出图之后怎么用")
     lines.append("")
     lines.append("1. 把生成的三视图存成 `input/character/threeview.png`；")
-    lines.append("2. 重新跑 `python3 scripts/prism.py canon` —— 它会自动认出来；")
+    lines.append("2. 重新跑 `python3 scripts/mvstudio.py canon` —— 它会自动认出来；")
     lines.append("3. 交付时它会作为 `<Picture 2>`（character turnaround reference）"
                  "与原始人物图 `<Picture 1>` 一起上传；")
     lines.append("4. 官方规则：这张图**只用来定义角色**，所以它会被引在 `<Subject 1>` "

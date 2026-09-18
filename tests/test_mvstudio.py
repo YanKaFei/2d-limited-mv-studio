@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""test_prism.py —— mv-prism 的行为规格测试（零第三方依赖）。
+"""test_mvstudio.py —— anime-mv-studio 的行为规格测试（零第三方依赖）。
 
 跑法：
     python3 -m unittest discover -s tests -t tests -v
@@ -1315,7 +1315,7 @@ class TestPipelineEndToEnd(unittest.TestCase):
         shutil.rmtree(cls.tmp, ignore_errors=True)
 
     def _run(self, *args):
-        cmd = [sys.executable, os.path.join(SCRIPTS, "prism.py")] + list(args)
+        cmd = [sys.executable, os.path.join(SCRIPTS, "mvstudio.py")] + list(args)
         return subprocess.run(cmd, cwd=self.proj, stdout=subprocess.PIPE,
                               stderr=subprocess.STDOUT)
 
@@ -1365,7 +1365,7 @@ class TestPipelineEndToEnd(unittest.TestCase):
         self.assertTrue(os.path.isfile(os.path.join(pack, "01-上传顺序与操作单.md")))
 
     def test_07_project_flag_before_subcommand_is_honoured(self):
-        """`prism.py --project X all` 与 `prism.py all --project X` 必须等价。
+        """`mvstudio.py --project X all` 与 `mvstudio.py all --project X` 必须等价。
 
         argparse 的子解析器默认值会**覆盖**父解析器已解析到的值，
         所以 --project 写在子命令之前会被静默丢掉——产物落到 skill 安装目录里。
@@ -1390,7 +1390,7 @@ class TestPipelineEndToEnd(unittest.TestCase):
         os.chmod(ro, 0o500)
         try:
             r = subprocess.run(
-                [sys.executable, os.path.join(SCRIPTS, "prism.py"),
+                [sys.executable, os.path.join(SCRIPTS, "mvstudio.py"),
                  "--project", ro, "doctor"],
                 cwd=self.proj, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             out = r.stdout.decode("utf-8", "replace")

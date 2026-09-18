@@ -406,7 +406,7 @@ def render_md(routes, chosen_id=None):
     lines.append("")
     lines.append(u"1. 直接回一个编号（1–4）；")
     lines.append(u"2. 或者说「第 2 条的 C1+C3，第 4 条的 C2」——允许按段混搭；")
-    lines.append(u"3. 选定后跑：`python3 scripts/prism.py styles --pick <route-id>`")
+    lines.append(u"3. 选定后跑：`python3 scripts/mvstudio.py styles --pick <route-id>`")
     lines.append("")
     return "\n".join(lines) + "\n"
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""prism.py —— mv-prism 统一入口。
+"""mvstudio.py —— anime-mv-studio 统一入口。
 
   doctor      环境体检（工具 / 模块 / 风格库 / 配置完整性）
   gate        第 0 步：材料闸门 + 时长闸门（>180s 直接失败）
@@ -91,7 +91,7 @@ def step_doctor(args):
     if args.json:
         common.emit(res, True)
     else:
-        common.echo(u"mv-prism 环境体检")
+        common.echo(u"anime-mv-studio 环境体检")
         common.echo(u"  Python      %s" % res["python"])
         for k, v in res["tools"].items():
             common.echo(u"  %-11s %s" % (k, v or u"缺失"))
@@ -311,7 +311,7 @@ def step_threeview(args):
     path = os.path.join(common.path("workspace_character"), "character_canon.json")
     canon = common.read_json(path, {}) or {}
     if not canon:
-        common.echo(u"还没有 Canon：先跑 scripts/prism.py canon")
+        common.echo(u"还没有 Canon：先跑 scripts/mvstudio.py canon")
         return 3
     spec = threeview_mod.build_spec(canon)
     checklist = threeview_mod.consistency_checklist(canon)
@@ -411,7 +411,7 @@ def step_segments(args):
     if chosen and not old.get("art_direction", {}).get("route_id"):
         common.echo(u"未选画风路线 → 先用第 1 条（%s）。"
                     u"**请让用户在下面 4 条里挑一条**，然后跑 "
-                    u"`prism.py styles --pick <id>` 再重跑本步。" % chosen["name"])
+                    u"`mvstudio.py styles --pick <id>` 再重跑本步。" % chosen["name"])
 
     plan = director_mod.build_draft(
         duration, analysis, lyric_lines, canon, segs, routes,
@@ -513,9 +513,9 @@ def _confirmation_gate(plan, args, for_pack=False):
     if len(pending) > 14:
         common.echo(u"  … 还有 %d 个" % (len(pending) - 14))
     common.echo(u"")
-    common.echo(u"  逐个确认：python3 scripts/prism.py confirm --step <步骤>")
-    common.echo(u"  一次确认：python3 scripts/prism.py confirm --all")
-    common.echo(u"  查看台账：python3 scripts/prism.py confirm --status")
+    common.echo(u"  逐个确认：python3 scripts/mvstudio.py confirm --step <步骤>")
+    common.echo(u"  一次确认：python3 scripts/mvstudio.py confirm --all")
+    common.echo(u"  查看台账：python3 scripts/mvstudio.py confirm --status")
     common.echo(u"  （确实无人值守时加 --unattended 跳过）")
     return 5
 
@@ -582,7 +582,7 @@ def step_lastframe(args):
             except ValueError:
                 idx = 0
             common.echo(u"  然后让用户确认这一段的输出与尾帧："
-                        u"python3 scripts/prism.py confirm --step chain-%02d" % idx)
+                        u"python3 scripts/mvstudio.py confirm --step chain-%02d" % idx)
         else:
             common.echo(u"✗ %s" % res.get("error"))
             if res.get("how"):
@@ -636,7 +636,7 @@ def _passthrough(args, keys):
 def step_render(args):
     plan = _load_plan()
     if not plan:
-        common.echo(u"没有导演稿：先跑 scripts/prism.py segments")
+        common.echo(u"没有导演稿：先跑 scripts/mvstudio.py segments")
         return 3
     # 顺序很重要：稿子还没填完时，「先填稿」比「先确认」更根本
     problems = h3render.check_ready(plan)
@@ -685,7 +685,7 @@ def step_validate(args):
 def step_pack(args):
     plan = _load_plan()
     if not plan:
-        common.echo(u"没有导演稿：先跑 scripts/prism.py segments")
+        common.echo(u"没有导演稿：先跑 scripts/mvstudio.py segments")
         return 3
     gate = _confirmation_gate(plan, args, for_pack=True)
     if gate is not None:
@@ -765,11 +765,11 @@ def step_all(args):
     common.echo(u"  2. 按 output/latest/threeview.md 出三视图，存进 "
                 u"input/character/threeview.png")
     common.echo(u"  3. **让用户在 output/latest/style_routes.md 的 4 条路线里挑一条**，"
-                u"然后跑 `python3 scripts/prism.py styles --pick <id>`")
+                u"然后跑 `python3 scripts/mvstudio.py styles --pick <id>`")
     common.echo(u"  4. 填 workspace/analysis/director_plan.json"
                 u"（工作表：workspace/analysis/director_worksheet.md）")
-    common.echo(u"  5. python3 scripts/prism.py render && python3 scripts/prism.py validate")
-    common.echo(u"  6. python3 scripts/prism.py pack")
+    common.echo(u"  5. python3 scripts/mvstudio.py render && python3 scripts/mvstudio.py validate")
+    common.echo(u"  6. python3 scripts/mvstudio.py pack")
     common.echo("")
     common.echo(u"══ 每一个步骤都要让用户确认一次 ══")
     plan = _load_plan()
@@ -780,7 +780,7 @@ def step_all(args):
         common.echo(u"  ⬜ %-10s %s —— %s" % (st, title, what))
     if pending:
         common.echo(u"")
-        common.echo(u"  确认：python3 scripts/prism.py confirm --step <步骤>"
+        common.echo(u"  确认：python3 scripts/mvstudio.py confirm --step <步骤>"
                     u"　或　--all 一次确认全部")
         common.echo(u"  未确认时 render / pack 会拒绝继续（除非 --unattended）")
     return 0
@@ -792,8 +792,8 @@ ROUTES = ["mv", "ref", "i2va", "t2va"]
 
 def build_parser():
     ap = argparse.ArgumentParser(
-        prog="prism.py",
-        description=u"mv-prism · 多风格融合舞蹈影像导演（MiniMax H3）")
+        prog="mvstudio.py",
+        description=u"anime-mv-studio · 多风格融合舞蹈影像导演（MiniMax H3）")
     common.add_common_args(ap)
     sub = ap.add_subparsers(dest="cmd")
 
@@ -912,7 +912,7 @@ def _prescan_common(argv):
     """在子解析器**覆盖之前**先抓到 --project / --json。
 
     argparse 的子解析器默认值会盖掉父解析器已经解析到的值，所以
-    `prism.py --project X all` 里的 --project 会被静默丢掉，
+    `mvstudio.py --project X all` 里的 --project 会被静默丢掉，
     产物落到 skill 安装目录里。这里先扫一遍原始 argv 兜住。
     """
     argv = list(sys.argv[1:] if argv is None else argv)
@@ -924,7 +924,7 @@ def _prescan_common(argv):
 
 
 def _autodetect_project(args, prescanned=None):
-    """在项目目录里直接跑 `python3 <skill>/scripts/prism.py all` 时用当前目录。
+    """在项目目录里直接跑 `python3 <skill>/scripts/mvstudio.py all` 时用当前目录。
 
     判据是存在 input/ workspace/ output/ config/ 之一——不看的话，用户在
     自己项目里跑，产物会全部落到 skill 安装目录里。
@@ -970,10 +970,10 @@ def main(argv=None):
         common.echo(u"换一个**当前可写**的目录再跑：")
         if suggestion:
             common.echo(u'  python3 "%s" --project "%s" all'
-                        % (os.path.join(HERE, "prism.py"), suggestion))
+                        % (os.path.join(HERE, "mvstudio.py"), suggestion))
         else:
             common.echo(u'  python3 "%s" --project <可写目录> all'
-                        % os.path.join(HERE, "prism.py"))
+                        % os.path.join(HERE, "mvstudio.py"))
         common.echo(u"（--project 放在子命令前后都一样；该目录下会自动建 "
                     u"input/ workspace/ output/）")
         return 4

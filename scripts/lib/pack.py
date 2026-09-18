@@ -265,7 +265,7 @@ def main(argv=None):
                                           "director_plan.json")
     plan = common.read_json(plan_path, {}) or {}
     if not (plan.get("segments") or []):
-        common.echo(u"没有分段，先跑 scripts/prism.py segments")
+        common.echo(u"没有分段，先跑 scripts/mvstudio.py segments")
         return 2
     res = pack(plan, out_dir=args.out, route=args.route, lang=args.lang,
                platform=getattr(args, "platform", None))

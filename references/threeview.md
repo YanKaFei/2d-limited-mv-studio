@@ -36,7 +36,7 @@
 | 背景 | 中性平灰，**无场景** |
 | 画法 | 单一连续线宽，所有格同一遍渲染 |
 
-指令：`python3 scripts/prism.py threeview` → `output/latest/threeview.md`
+指令：`python3 scripts/mvstudio.py threeview` → `output/latest/threeview.md`
 （内含可直接粘贴的**中英双语**提示词 + 负向词。）
 
 ---
@@ -59,7 +59,7 @@ background scenery, colour cast between panels
 ## 四、出图之后怎么用
 
 1. 存成 `input/character/threeview.png`；
-2. 重跑 `python3 scripts/prism.py canon` —— `materials.discover` 会按文件名
+2. 重跑 `python3 scripts/mvstudio.py canon` —— `materials.discover` 会按文件名
    （`threeview` / `turnaround` / `三视图` / `setting`）自动认出来；
 3. 渲染时它作为 **`<Picture 2>`（character turnaround reference）** 与原始图
    `<Picture 1>` 一起上传；

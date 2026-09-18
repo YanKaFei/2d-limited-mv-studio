@@ -18,7 +18,7 @@ Issues and PRs are welcome in **中文 or English** — either is fine.
 - **行为改动先写失败测试。** 跑 `python3 -m unittest discover -s tests -t tests`，
   先看它红，再改，再看它绿。
 - **不要往仓库里带具体项目的内容。** 人物名、歌名、私人的提示词定稿、
-  本机绝对路径都不许进来 —— `tests/test_prism.py::TestNoPrivateContent`
+  本机绝对路径都不许进来 —— `tests/test_mvstudio.py::TestNoPrivateContent`
   会拦。定稿请写在 `workspace/`（已在 `.gitignore` 里）。
 - **提示词里的文字零 Markdown。** 粘贴区是要交给模型的，加粗会被当成画面要求。
 - **画风术语先查库**，不要凭记忆编造流派名。

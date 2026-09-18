@@ -150,7 +150,7 @@ def validate_chain(plan):
             continue
         if not ch.get("declared"):
             warnings.append(u"%s 的尾帧还没取（chain.declared=false）："
-                            u"请用 prism.py lastframe 取帧，或在平台上导出" % label)
+                            u"请用 mvstudio.py lastframe 取帧，或在平台上导出" % label)
         elif not ch.get("frame") or not os.path.isfile(ch.get("frame") or ""):
             problems.append(u"%s 声明了尾帧但文件不存在：%s"
                             % (label, ch.get("frame")))
@@ -197,8 +197,8 @@ def render_md(plan):
     lines.append(u"## 取帧怎么做")
     lines.append("")
     lines.append(u"```bash")
-    lines.append(u"python3 scripts/prism.py lastframe --video out/C1.mp4 --segment C1")
-    lines.append(u"# 或者：python3 scripts/prism.py lastframe --scan out/   # 扫整个目录")
+    lines.append(u"python3 scripts/mvstudio.py lastframe --video out/C1.mp4 --segment C1")
+    lines.append(u"# 或者：python3 scripts/mvstudio.py lastframe --scan out/   # 扫整个目录")
     lines.append(u"```")
     lines.append("")
     lines.append(u"平台上也行：小云雀 / MiniMax Design 都能在时间轴上定位到最后一帧"
@@ -229,7 +229,7 @@ def main(argv=None):
                                      "director_plan.json")
     plan = common.read_json(path, {}) or {}
     if not plan.get("segments"):
-        common.echo(u"没有分段：先跑 scripts/prism.py segments")
+        common.echo(u"没有分段：先跑 scripts/mvstudio.py segments")
         return 3
     build_chain(plan, enabled=not args.off)
     common.write_json(path, plan)

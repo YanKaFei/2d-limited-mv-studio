@@ -68,7 +68,7 @@ C1 ──尾帧──▶ C2 ──尾帧──▶ C3 ──尾帧──▶ C4
 **A. 本地取（推荐，最快）**
 
 ```bash
-python3 scripts/prism.py lastframe --video out/C1.mp4 --segment C1 \
+python3 scripts/mvstudio.py lastframe --video out/C1.mp4 --segment C1 \
     --describe "她右臂抬起，重心在左脚，背景是注册标记构成的平面世界"
 ```
 
@@ -78,7 +78,7 @@ python3 scripts/prism.py lastframe --video out/C1.mp4 --segment C1 \
 **B. 平台导出**
 
 两个平台都能在时间轴上定位到最后一帧并导出图片。
-存成 `workspace/frames/C1_last.png`，再跑 `prism.py chain` 重新挂链。
+存成 `workspace/frames/C1_last.png`，再跑 `mvstudio.py chain` 重新挂链。
 
 ### ⚠️ 两条硬约束（必须遵守）
 
@@ -129,9 +129,9 @@ python3 scripts/prism.py lastframe --video out/C1.mp4 --segment C1 \
 用户要求「每一个步骤都要让用户确认一下」。三个平台都一样：
 
 ```bash
-python3 scripts/prism.py confirm --status        # 看还有哪些没确认
-python3 scripts/prism.py confirm --step canon    # 确认某一步
-python3 scripts/prism.py confirm --all           # 一次确认全部
+python3 scripts/mvstudio.py confirm --status        # 看还有哪些没确认
+python3 scripts/mvstudio.py confirm --step canon    # 确认某一步
+python3 scripts/mvstudio.py confirm --all           # 一次确认全部
 ```
 
 确认点（`workspace/confirmations.json` 落盘，可查、可撤销）：

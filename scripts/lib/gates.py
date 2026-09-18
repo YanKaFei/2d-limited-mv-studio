@@ -115,7 +115,7 @@ def validate(plan, prompts_text="", strict=False):
     stats["segments"] = len(segments)
     stats["target_seconds"] = target
     if not segments:
-        problems.append(u"A 时间：没有任何分段（先跑 scripts/prism.py segments）")
+        problems.append(u"A 时间：没有任何分段（先跑 scripts/mvstudio.py segments）")
     if duration:
         expect = int(math.ceil(round(float(duration) / target, 9)))
         if len(segments) != expect:
@@ -340,7 +340,7 @@ def validate(plan, prompts_text="", strict=False):
         if not end.get("id"):
             problems.append(u"C 歌词：还没有选收尾效果 —— 全片结束不一定要站定，"
                             u"请让用户从 endings 菜单里挑一个"
-                            u"（python3 scripts/prism.py endings）")
+                            u"（python3 scripts/mvstudio.py endings）")
         elif blocks:
             last = blocks[-1]
             probe = (end.get("prompt_zh") or end.get("prompt_en") or "")[:12]

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# mv-prism · 可选能力安装（核心管线零依赖，这些只是加分项）
+# anime-mv-studio · 可选能力安装（核心管线零依赖，这些只是加分项）
 #
 #   bash scripts/setup_env.sh            # numpy/librosa/soundfile/scipy
 #   bash scripts/setup_env.sh --asr      # 追加 faster-whisper
@@ -44,12 +44,12 @@ fi
 
 echo
 echo "⑥ 体检"
-python scripts/prism.py doctor
+python scripts/mvstudio.py doctor
 
 cat <<'TIP'
 
 提示：
   * 想要任意格式音频都能自动切分 → brew install ffmpeg
-  * 激活环境后再跑：source .venv/bin/activate && python scripts/prism.py all
+  * 激活环境后再跑：source .venv/bin/activate && python scripts/mvstudio.py all
   * ASR 结果只能当草稿，必须人工核对（实测把「王子」转成过「滑走」）
 TIP

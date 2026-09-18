@@ -163,10 +163,10 @@ def ops_sheet(platform_id, plan, seg_files=None, route="mv", lang="zh"):
     lines.append("")
     lines.append(u"## 第 3 步 · 每条出片后立刻做两件事")
     lines.append("")
-    lines.append(u"1. **截尾帧**：`python3 scripts/prism.py lastframe --video <本段视频> "
+    lines.append(u"1. **截尾帧**：`python3 scripts/mvstudio.py lastframe --video <本段视频> "
                  u"--segment %s`" % ((segs[0].get("label") if segs else u"C1")))
     lines.append(u"   平台上也行：%s" % spec["cut_how"].split(u"。")[0] + u"。")
-    lines.append(u"2. **让用户确认这一条**：`python3 scripts/prism.py confirm "
+    lines.append(u"2. **让用户确认这一条**：`python3 scripts/mvstudio.py confirm "
                  u"--step prompt-01` 与 `--step chain-01`")
     lines.append(u"   确认完再生成下一条——尾帧是下一条的首帧，顺序不能乱。")
     lines.append("")
@@ -253,7 +253,7 @@ def canvas_instruction(platform_id, plan, route="mv", lang="zh"):
     for s, (title, what) in sorted(
             __import__("confirm").STEP_LABELS.items(), key=lambda kv: kv[0]):
         out.append(u"- %s：%s" % (title, what))
-    out.append(u"确认用：`python3 scripts/prism.py confirm --step <步骤>`")
+    out.append(u"确认用：`python3 scripts/mvstudio.py confirm --step <步骤>`")
     out.append("")
     return "\n".join(out) + "\n"
 

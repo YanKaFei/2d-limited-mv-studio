@@ -1,13 +1,13 @@
 ---
-name: mv-prism
-description: "多风格融合舞蹈影像导演：输入一张人物图 + 一段音乐，按 14.5 秒切分，让人物在**不同艺术风格环境**下持续跳舞，逐条输出可直接投喂 MiniMax H3 的提示词包（≤3 分钟）。适配**小云雀**与**MiniMax Design**（用上它们的切割 / 首尾帧 / AI 剪辑功能）。每条提示词固定六段结构：人物与参考保持一致性 / 风格提示词 / 内容提示词 / integrated_multimodal_description / overall_soundscape / non_diegetic_music。含音乐实测、时长闸门（>3 分钟直接失败并要求切歌）、自动切音频、人物三视图（转面表）、4 条画风融合路线供用户挑、歌词元素落进背景、**尾帧续接**（上一段最后一帧自动截图，作为下一段首帧，并在【内容提示词】里写「延续上一帧」）、歌词↔动作↔运镜↔节奏四向对齐、**每一个步骤都请用户确认**、以及交付前机器校验。⚠️ 用户已自己上传原曲，所以提示词里**不写任何生成音乐的内容**。用户说『做一条 MV』『给这首歌配画面』『音乐和舞蹈要卡点』『人物图做 MV』『让人物在不同画风里跳舞』『歌词要进到画面里』『小云雀 / MiniMax Design 做 MV』时加载本技能。"
+name: anime-mv-studio
+description: "一键生成二次元人物 MV 音乐动画：输入一张人物图 + 一段音乐，按 14.5 秒切分，让人物在**不同艺术风格环境**下持续跳舞，逐条输出可直接投喂 MiniMax H3 的提示词包（≤3 分钟）。适配**小云雀**与**MiniMax Design**（用上它们的切割 / 首尾帧 / AI 剪辑功能）。每条提示词固定六段结构：人物与参考保持一致性 / 风格提示词 / 内容提示词 / integrated_multimodal_description / overall_soundscape / non_diegetic_music。含音乐实测、时长闸门（>3 分钟直接失败并要求切歌）、自动切音频、人物三视图（转面表）、4 条画风融合路线供用户挑、歌词元素落进背景、**尾帧续接**（上一段最后一帧自动截图，作为下一段首帧，并在【内容提示词】里写「延续上一帧」）、歌词↔动作↔运镜↔节奏四向对齐、**每一个步骤都请用户确认**、以及交付前机器校验。⚠️ 用户已自己上传原曲，所以提示词里**不写任何生成音乐的内容**。用户说『做一条 MV』『给这首歌配画面』『音乐和舞蹈要卡点』『人物图做 MV』『让人物在不同画风里跳舞』『歌词要进到画面里』『小云雀 / MiniMax Design 做 MV』时加载本技能。"
 metadata:
-  short-description: "一张人物图 + 一首歌 → 14.5 秒 × N 条 H3 原生提示词，多画风融合舞蹈影像"
-  version: "1.0.0"
-  miniapp-code: mv-prism
+  short-description: "一键生成二次元人物 MV 音乐动画：一张人物图 + 一首歌 → 14.5 秒 × N 条 MiniMax H3 提示词"
+  version: "1.2.0"
+  miniapp-code: anime-mv-studio
 ---
 
-# mv-prism · 多风格融合舞蹈影像导演
+# anime-mv-studio · 二次元 MV 工坊
 
 > **人物决定谁在画面里。歌词决定画什么。音乐决定什么时候变。艺术指导决定怎么表现。**
 >
@@ -98,12 +98,12 @@ C1 ──尾帧──▶ C2 ──尾帧──▶ C3 ──尾帧──▶ C4
 
 ```bash
 # ① 取尾帧（自动挂到下一段的首帧上）
-python3 scripts/prism.py lastframe --video out/C1.mp4 --segment C1 \
+python3 scripts/mvstudio.py lastframe --video out/C1.mp4 --segment C1 \
     --describe "她右臂抬起，重心在左脚，背景是注册标记构成的平面世界"
 
 # ② 让用户确认这一条
-python3 scripts/prism.py confirm --step prompt-01
-python3 scripts/prism.py confirm --step chain-01
+python3 scripts/mvstudio.py confirm --step prompt-01
+python3 scripts/mvstudio.py confirm --step chain-01
 ```
 
 取帧工具降级：`ffmpeg` → **macOS 自带 AVFoundation**（本机实测可用，
@@ -129,9 +129,9 @@ python3 scripts/prism.py confirm --step chain-01
 **站定是最偷懒的收尾。** 最后一个动作决定观众记住什么，所以让用户挑。
 
 ```bash
-python3 scripts/prism.py endings              # 菜单（中英双语）
-python3 scripts/prism.py endings --pick reach_and_crack
-python3 scripts/prism.py confirm --step ending
+python3 scripts/mvstudio.py endings              # 菜单（中英双语）
+python3 scripts/mvstudio.py endings --pick reach_and_crack
+python3 scripts/mvstudio.py confirm --step ending
 ```
 
 八种可直接写进【内容提示词】的收尾效果，按音乐的**收束性格**排序：
@@ -168,10 +168,10 @@ gate → analyze → lyrics → canon → threeview → styles → segments → 
 ```
 
 ```bash
-python3 scripts/prism.py confirm --status      # 还有哪些没确认
-python3 scripts/prism.py confirm --step canon   # 确认某一步
-python3 scripts/prism.py confirm --all          # 一次确认全部
-python3 scripts/prism.py confirm --revoke canon # 撤销
+python3 scripts/mvstudio.py confirm --status      # 还有哪些没确认
+python3 scripts/mvstudio.py confirm --step canon   # 确认某一步
+python3 scripts/mvstudio.py confirm --all          # 一次确认全部
+python3 scripts/mvstudio.py confirm --revoke canon # 撤销
 ```
 
 **未确认时 `render` 与 `pack` 会拒绝继续（exit 5）**，
@@ -205,8 +205,8 @@ python3 scripts/prism.py confirm --revoke canon # 撤销
 见 **`references/platform-playbook.md`**。
 
 ```bash
-python3 scripts/prism.py platform --platform xiaoyunque
-python3 scripts/prism.py platform --platform minimax-design
+python3 scripts/mvstudio.py platform --platform xiaoyunque
+python3 scripts/mvstudio.py platform --platform minimax-design
 ```
 
 ---
@@ -242,39 +242,39 @@ python3 scripts/prism.py platform --platform minimax-design
 cd <本skill目录>
 
 # ① 第 0 步：材料闸门 + 时长闸门（先跑这个，别直接开工）
-python3 scripts/prism.py gate --audio song.mp3 --image char.png
+python3 scripts/mvstudio.py gate --audio song.mp3 --image char.png
 
 # ② 跑完全部确定性步骤（音乐实测 / 歌词 / Canon 骨架 / 三视图规格 /
 #    14.5 秒切分 / 真的切音频 / 画风路线菜单 / 草稿导演稿）
-python3 scripts/prism.py all --audio song.mp3 --image char.png
+python3 scripts/mvstudio.py all --audio song.mp3 --image char.png
 
 # ③ 只有这一步需要你：填导演稿
 #    workspace/analysis/director_plan.json（人读版 director_worksheet.md）
 
 # ③.5 让用户挑全片怎么结束
-python3 scripts/prism.py endings
-python3 scripts/prism.py endings --pick reach_and_crack
+python3 scripts/mvstudio.py endings
+python3 scripts/mvstudio.py endings --pick reach_and_crack
 
 # ④ 让用户确认每一步（未确认时 render/pack 会拒绝）
-python3 scripts/prism.py confirm --status
-python3 scripts/prism.py confirm --step segments
-python3 scripts/prism.py confirm --all      # 或逐个确认
+python3 scripts/mvstudio.py confirm --status
+python3 scripts/mvstudio.py confirm --step segments
+python3 scripts/mvstudio.py confirm --all      # 或逐个确认
 
 # ⑤ 渲染 + 校验 + 打包
-python3 scripts/prism.py render
-python3 scripts/prism.py validate      # exit 0 才算过
-python3 scripts/prism.py pack --platform xiaoyunque
+python3 scripts/mvstudio.py render
+python3 scripts/mvstudio.py validate      # exit 0 才算过
+python3 scripts/mvstudio.py pack --platform xiaoyunque
 ```
 
 **逐条生成时的循环**（每一条都要走）：
 
 ```bash
-python3 scripts/prism.py render                     # 一次渲染全部提示词
+python3 scripts/mvstudio.py render                     # 一次渲染全部提示词
 # 在平台上生成 C1 → 取它的尾帧 → 挂到 C2 → 确认
-python3 scripts/prism.py lastframe --video out/C1.mp4 --segment C1 \
+python3 scripts/mvstudio.py lastframe --video out/C1.mp4 --segment C1 \
     --describe "这一帧里看到了什么"
-python3 scripts/prism.py confirm --step prompt-01
-python3 scripts/prism.py confirm --step chain-01
+python3 scripts/mvstudio.py confirm --step prompt-01
+python3 scripts/mvstudio.py confirm --step chain-01
 # 再生成 C2 …… 顺序不能乱：尾帧是下一条的首帧
 ```
 
@@ -287,7 +287,7 @@ python3 scripts/prism.py confirm --step chain-01
 ### Step 1 · 材料与时长闸门
 
 ```bash
-python3 scripts/prism.py gate --audio <歌> --image <人物图> [--lyrics <歌词>] --json
+python3 scripts/mvstudio.py gate --audio <歌> --image <人物图> [--lyrics <歌词>] --json
 ```
 
 退出码：`0` 通过 / `3` 阻断（缺材料或超 3 分钟）。
@@ -295,7 +295,7 @@ python3 scripts/prism.py gate --audio <歌> --image <人物图> [--lyrics <歌�
 ### Step 2 · 音乐实测（不是装饰）
 
 ```bash
-python3 scripts/prism.py analyze
+python3 scripts/mvstudio.py analyze
 ```
 
 产出 BPM、拍网格、onset、RMS 包络、音色亮度、段落、高潮、低谷、收束性格。
@@ -311,7 +311,7 @@ python3 scripts/prism.py analyze
 ### Step 3 · 歌词
 
 ```bash
-python3 scripts/prism.py lyrics
+python3 scripts/mvstudio.py lyrics
 ```
 
 来源优先级（严格）：内嵌 → `.lrc` → `.srt` → `.vtt` → `.txt` → ASR。
@@ -327,7 +327,7 @@ python3 scripts/prism.py lyrics
 ### Step 4 · 人物 Canon（唯一真相）
 
 ```bash
-python3 scripts/prism.py canon
+python3 scripts/mvstudio.py canon
 ```
 
 脚本给机械测量（尺寸／画幅／主导色／明暗与饱和基调）和一份**工作副本**。
@@ -345,7 +345,7 @@ python3 scripts/prism.py canon
 ### Step 5 · 三视图（把「只有一张图」变成「转面表」）
 
 ```bash
-python3 scripts/prism.py threeview
+python3 scripts/mvstudio.py threeview
 ```
 
 一张正面图丢给视频模型，转个身脸就崩。三视图（**正面 / 四分之三 / 侧面 / 背面**
@@ -360,8 +360,8 @@ python3 scripts/prism.py threeview
 ### Step 6 · 画风路线（**这一步必须让用户选**）
 
 ```bash
-python3 scripts/prism.py all            # 菜单落在 output/latest/style_routes.md
-python3 scripts/prism.py styles --pick <route-id>
+python3 scripts/mvstudio.py all            # 菜单落在 output/latest/style_routes.md
+python3 scripts/mvstudio.py styles --pick <route-id>
 ```
 
 **不要问用户「你想要什么风格」**——那样得到的通常是「日系」「赛博朋克」这类
@@ -387,7 +387,7 @@ python3 scripts/prism.py styles --pick <route-id>
 ### Step 7 · 分段（14.5 秒生成单元）
 
 ```bash
-python3 scripts/prism.py segments
+python3 scripts/mvstudio.py segments
 ```
 
 - `segment_count = ceil(duration / 14.5)`，最多 13 段。
@@ -474,8 +474,8 @@ python3 scripts/prism.py segments
 ### Step 9 · 渲染与校验
 
 ```bash
-python3 scripts/prism.py render     # 草稿会被拒绝（exit 2），不会瞎编
-python3 scripts/prism.py validate   # exit 0 才算过
+python3 scripts/mvstudio.py render     # 草稿会被拒绝（exit 2），不会瞎编
+python3 scripts/mvstudio.py validate   # exit 0 才算过
 ```
 
 渲染器保证：
@@ -577,7 +577,7 @@ output/latest/
 [ ] 提示词里**没有**任何生成音乐/配乐的要求，non_diegetic_music: N/A
 [ ] 第 2 条起都取了上一段的尾帧、写在【内容提示词】的「延续上一帧」里、并作为首帧上传
 [ ] 每一个步骤都已由用户确认（confirmations.json 无 pending）
-[ ] python3 scripts/prism.py validate 退出码 0
+[ ] python3 scripts/mvstudio.py validate 退出码 0
 ```
 
 ---
@@ -607,22 +607,22 @@ output/latest/
 
 | 命令 | 用途 |
 |------|------|
-| `prism.py doctor` | 环境体检（工具 / 模块 / 风格库 / 配置完整性） |
-| `prism.py gate` | 材料闸门 + 时长闸门 |
-| `prism.py analyze` | 音乐实测 |
-| `prism.py lyrics` | 歌词时间轴 |
-| `prism.py canon` | 人物 Canon 骨架 + 工作副本 + 三视图规格 |
-| `prism.py threeview` | 三视图规格与中英提示词 |
-| `prism.py styles [--pick]` | 画风融合路线菜单 / 应用选定路线 |
-| `prism.py segments` | 14.5 秒切分 + 真的切音频 + 草稿导演稿 |
-| `prism.py render` | 渲染 H3 原生提示词（草稿会被拒绝） |
-| `prism.py validate` | 交付校验 |
-| `prism.py pack` | 打上传交付包 |
-| `prism.py lastframe` | **取视频尾帧**（下一段的首帧）｜ `--scan` 扫整个目录 |
-| `prism.py chain` | 构建/查看尾帧续接链 |
-| `prism.py endings` | **收尾效果菜单**（八种，不一定要站定）｜ `--pick <id>` |
-| `prism.py confirm` | **逐步骤确认台账**（`--step` / `--all` / `--status` / `--revoke`） |
-| `prism.py platform` | 平台适配信息（切割功能 / 首尾帧 / 各自的坑） |
-| `prism.py all` | 跑完所有确定性步骤 |
+| `mvstudio.py doctor` | 环境体检（工具 / 模块 / 风格库 / 配置完整性） |
+| `mvstudio.py gate` | 材料闸门 + 时长闸门 |
+| `mvstudio.py analyze` | 音乐实测 |
+| `mvstudio.py lyrics` | 歌词时间轴 |
+| `mvstudio.py canon` | 人物 Canon 骨架 + 工作副本 + 三视图规格 |
+| `mvstudio.py threeview` | 三视图规格与中英提示词 |
+| `mvstudio.py styles [--pick]` | 画风融合路线菜单 / 应用选定路线 |
+| `mvstudio.py segments` | 14.5 秒切分 + 真的切音频 + 草稿导演稿 |
+| `mvstudio.py render` | 渲染 H3 原生提示词（草稿会被拒绝） |
+| `mvstudio.py validate` | 交付校验 |
+| `mvstudio.py pack` | 打上传交付包 |
+| `mvstudio.py lastframe` | **取视频尾帧**（下一段的首帧）｜ `--scan` 扫整个目录 |
+| `mvstudio.py chain` | 构建/查看尾帧续接链 |
+| `mvstudio.py endings` | **收尾效果菜单**（八种，不一定要站定）｜ `--pick <id>` |
+| `mvstudio.py confirm` | **逐步骤确认台账**（`--step` / `--all` / `--status` / `--revoke`） |
+| `mvstudio.py platform` | 平台适配信息（切割功能 / 首尾帧 / 各自的坑） |
+| `mvstudio.py all` | 跑完所有确定性步骤 |
 
 测试：`python3 -m unittest discover -s tests -t tests -v`（62 项，**零第三方依赖**）。

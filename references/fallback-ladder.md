@@ -107,7 +107,7 @@ bash scripts/setup_env.sh --demucs   # 追加 demucs（人声分离）
 brew install ffmpeg                  # 系统级：解码任意格式
 ```
 
-装完后重跑 `python3 scripts/prism.py doctor` 确认层级提升。
+装完后重跑 `python3 scripts/mvstudio.py doctor` 确认层级提升。
 
 > **注意**：本技能的**核心管线零第三方依赖**（Python 3.9 标准库即可跑完整条流程）。
 > 上面这些是**加分项**，不是必需项。

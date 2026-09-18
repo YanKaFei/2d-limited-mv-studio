@@ -5,7 +5,7 @@
 
 ---
 
-## A. 四组机器闸门（`python3 scripts/prism.py validate`）
+## A. 四组机器闸门（`python3 scripts/mvstudio.py validate`）
 
 退出码 `0` 通过 / `1` 有问题。**未通过不许说 DONE。**
 
@@ -50,7 +50,7 @@
 
 ---
 
-## C. 渲染器的硬闸门（`prism.py render`，exit 2）
+## C. 渲染器的硬闸门（`mvstudio.py render`，exit 2）
 
 以下任一情况**拒绝渲染**并逐条列出缺什么：
 

@@ -1,7 +1,7 @@
 # 音乐分析方法
 
 > 目标不是「判断快歌慢歌」，而是拿到**能驱动画面决策的六个数字**。
-> 全部由 `scripts/prism.py analyze` 实测产出，不靠听感描述。
+> 全部由 `scripts/mvstudio.py analyze` 实测产出，不靠听感描述。
 
 ---
 

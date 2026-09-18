@@ -126,10 +126,10 @@ def check_ready(plan):
             problems.append("character_canon.%s 为空（每条 prompt 都要重申）" % f)
     ad = plan.get("art_direction") or {}
     if not (ad.get("movement_per_segment") or []):
-        problems.append("art_direction.movement_per_segment 为空：先跑 scripts/prism.py styles --pick <id>")
+        problems.append("art_direction.movement_per_segment 为空：先跑 scripts/mvstudio.py styles --pick <id>")
     segs = plan.get("segments") or []
     if not segs:
-        problems.append("segments 为空：先跑 scripts/prism.py segments")
+        problems.append("segments 为空：先跑 scripts/mvstudio.py segments")
     cfg = common.config()
     required_words = [w.lower() for w in cfg["output"]["style_required_words"]]
     for seg in segs:
@@ -828,7 +828,7 @@ def render_brief(plan, seg):
 
 
 # ------------------------------------------------------------------ 整包
-HEADER = u"""# mv-prism · MiniMax H3 提示词包
+HEADER = u"""# anime-mv-studio · MiniMax H3 提示词包
 
 > 每条 prompt 都是 **H3 原生格式**，可整段复制粘贴。
 > 「导演简报」是给你看的，**不要**贴进模型——H3 前面有 Context-IR 做理解与改写，

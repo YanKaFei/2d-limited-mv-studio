@@ -1,4 +1,4 @@
-把材料丢进这些目录，然后跑 `python3 scripts/prism.py all`：
+把材料丢进这些目录，然后跑 `python3 scripts/mvstudio.py all`：
 
   input/music/       一首歌（mp3 / wav / flac / m4a / aac / ogg，≤3 分钟）
   input/character/   一张人物参考图（png / jpg / webp）

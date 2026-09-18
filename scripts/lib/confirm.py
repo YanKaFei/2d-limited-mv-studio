@@ -157,10 +157,10 @@ class Ledger(object):
         lines.append(u"## 怎么确认")
         lines.append("")
         lines.append(u"```bash")
-        lines.append(u"python3 scripts/prism.py confirm --step gate")
-        lines.append(u"python3 scripts/prism.py confirm --step prompt-01 --note \"卡点没问题\"")
-        lines.append(u"python3 scripts/prism.py confirm --all     # 一次确认全部")
-        lines.append(u"python3 scripts/prism.py confirm --status")
+        lines.append(u"python3 scripts/mvstudio.py confirm --step gate")
+        lines.append(u"python3 scripts/mvstudio.py confirm --step prompt-01 --note \"卡点没问题\"")
+        lines.append(u"python3 scripts/mvstudio.py confirm --all     # 一次确认全部")
+        lines.append(u"python3 scripts/mvstudio.py confirm --status")
         lines.append(u"```")
         lines.append("")
         if st["pending_for_render"]:
@@ -211,7 +211,7 @@ def main(argv=None):
             nxt = pend[0]
             t2, _ = label_for(nxt)
             common.echo(u"下一步待确认：`%s`（%s）" % (nxt, t2))
-            common.echo(u"  python3 scripts/prism.py confirm --step %s" % nxt)
+            common.echo(u"  python3 scripts/mvstudio.py confirm --step %s" % nxt)
         else:
             common.echo(u"全部步骤已确认，可以跑 render。")
         return 0

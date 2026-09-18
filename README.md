@@ -1,8 +1,8 @@
 <div align="center">
 
-# mv-prism
+# anime-mv-studio
 
-**棱镜 MV · One image, one song, many worlds.**
+**二次元 MV 工坊 · One image, one song, many worlds.**
 
 *The world mutates. The character does not.*
 *世界不断变异，角色始终稳定。*
@@ -28,14 +28,15 @@
 > 一条 MV 不是一串好看的画面。它是一具**拒绝停下来的身体**：周围的世界被反复重画——
 > 印刷、撕开、刻蚀、溶解、错版——而到最后一帧，她仍然明确地是同一个人。
 
-`mv-prism` takes **one character image + one song** and returns a complete, machine-checked prompt
-package for **MiniMax H3**: the music cut at **14.5 s**, a cast of art movements the character
-dances through, lyric objects written into the background, camera language restricted to H3's
-official vocabulary — and every segment chained to the previous one by its **actual last frame**.
+**One-click anime character music videos.** Give it a character image and a song; it hands back a
+complete, machine-checked prompt package for **MiniMax H3** — the music cut at **14.5 s**, a cast of
+art movements your character dances through, lyric objects written into the background, camera
+language restricted to H3's official vocabulary, and every segment chained to the previous one by
+its **actual last frame**.
 
-`mv-prism` 输入**一张人物图 + 一首歌**，输出一整套经过机器校验的 **MiniMax H3** 提示词包：
-音乐按 **14.5 秒**切分，人物穿越多种艺术流派，歌词里的实物落进背景，运镜只用 H3 官方词表，
-并且每一段都用上一段的**真实尾帧**续接。
+**一键生成二次元人物 MV 音乐动画。** 给它一张人物图和一首歌，它交回一整套经过机器校验的
+**MiniMax H3** 提示词包：音乐按 **14.5 秒**切分，人物穿越多种艺术流派，歌词里的实物落进背景，
+运镜只用 H3 官方词表，并且每一段都用上一段的**真实尾帧**续接。
 
 ---
 
@@ -56,7 +57,7 @@ So the two numbers are deliberately kept apart:
 | usable | 14.5 s | the remaining **0.58 s is seam overlap** — hide the join inside the fastest motion |
 
 Naive rounding-up silently *truncates the music* (a 6 s request only delivers 5.875 s).
-`mv-prism` picks the smallest integer whose delivered length still covers the audio.
+`anime-mv-studio` picks the smallest integer whose delivered length still covers the audio.
 
 ### The six-section prompt
 
@@ -78,7 +79,7 @@ same prompt.
 ### The last gesture
 
 A standing pose is the laziest way to end a film. The last gesture is what the audience keeps.
-`mv-prism` offers **eight directable endings**, ranked against the music's own ending character:
+`anime-mv-studio` offers **eight directable endings**, ranked against the music's own ending character:
 
 | id | Ending | What happens |
 |---|---|---|
@@ -106,7 +107,7 @@ Two hard constraints follow, and one of them is a genuine design tension worth n
 
 1. **The style change happens *inside* the segment.** A chained first frame drags the previous
    segment's art style in with it. Rather than choosing between "connected" and "a new style every
-   segment", `mv-prism` does both: `0–1.5 s` holds the previous drawing style and pose, then the
+   segment", `anime-mv-studio` does both: `0–1.5 s` holds the previous drawing style and pose, then the
    world transitions *within the shot*. The transition becomes an event instead of a cut.
 2. **Do not change the pose while chaining.** A third-party field report (unverified — see
    `references/platform-playbook.md`) puts limb tearing at vertical displacement above **12 % of
@@ -119,9 +120,9 @@ It never passes off a first frame as a last frame.
 ### Every step waits for you
 
 ```bash
-python3 scripts/prism.py confirm --status
-python3 scripts/prism.py confirm --step canon --note "人设没问题"
-python3 scripts/prism.py confirm --all
+python3 scripts/mvstudio.py confirm --status
+python3 scripts/mvstudio.py confirm --step canon --note "人设没问题"
+python3 scripts/mvstudio.py confirm --all
 ```
 
 Confirmation points are written to `workspace/confirmations.json` — auditable, revocable:
@@ -170,7 +171,7 @@ H3 的 `duration` **只接受 4–15 的整数**；而它的帧网格（`17k+5`�
 | 可用 | 14.5 秒 | 多出的 **0.58 秒是接缝重叠量**——把缝藏在最快的那一下动作里 |
 
 单纯向上取整会**悄悄截断音乐**（请求 6 秒只交付 5.875 秒）。
-`mv-prism` 取的是「实出时长仍能盖住音乐」的最小整数。
+`anime-mv-studio` 取的是「实出时长仍能盖住音乐」的最小整数。
 
 ### 每条提示词的固定六段
 
@@ -189,8 +190,8 @@ non_diegetic_music: N/A
 ### 最后一个手势
 
 站定是最偷懒的收尾。观众记住的是最后一个动作。
-`mv-prism` 提供 **八种可直接写进提示词的收尾效果**，并按音乐自己的收束性格排序
-（见上方英文表格 / `python3 scripts/prism.py endings`）。
+`anime-mv-studio` 提供 **八种可直接写进提示词的收尾效果**，并按音乐自己的收束性格排序
+（见上方英文表格 / `python3 scripts/mvstudio.py endings`）。
 
 每一种都**不改变人物身份**。**消失的是「画」，不是「人」。**
 
@@ -247,15 +248,15 @@ gate → analyze → lyrics → canon → threeview → styles → segments
 ## Quick start
 
 ```bash
-git clone <this repo> ~/Desktop/mv-prism && cd ~/Desktop/mv-prism
+git clone <this repo> ~/Desktop/anime-mv-studio && cd ~/Desktop/anime-mv-studio
 
-python3 scripts/prism.py doctor          # environment check
-python3 scripts/prism.py all             # deterministic pipeline
-python3 scripts/prism.py endings         # pick the last gesture
-python3 scripts/prism.py confirm --all   # confirm each step
-python3 scripts/prism.py render          # six-section package
-python3 scripts/prism.py validate        # must exit 0
-python3 scripts/prism.py pack --platform xiaoyunque
+python3 scripts/mvstudio.py doctor          # environment check
+python3 scripts/mvstudio.py all             # deterministic pipeline
+python3 scripts/mvstudio.py endings         # pick the last gesture
+python3 scripts/mvstudio.py confirm --all   # confirm each step
+python3 scripts/mvstudio.py render          # six-section package
+python3 scripts/mvstudio.py validate        # must exit 0
+python3 scripts/mvstudio.py pack --platform xiaoyunque
 ```
 
 Runs from any directory with `--project <writable dir>`. If the skill folder itself is read-only
@@ -295,7 +296,7 @@ Full playbook, each platform's pitfalls, and the provenance and confidence of ev
 <a id="install"></a>
 
 ```bash
-bash install-to-dsh.sh ~/my-project    # symlink into <project>/.dsh/skills/mv-prism
+bash install-to-dsh.sh ~/my-project    # symlink into <project>/.dsh/skills/anime-mv-studio
 ```
 
 ---
@@ -346,11 +347,11 @@ package.
 ## Repository layout
 
 ```
-mv-prism/
+anime-mv-studio/
 ├── SKILL.md                    the skill itself — workflow, hard gates, DoD
 ├── config/defaults.yaml        tunable parameters (directorial judgement is not here)
 ├── scripts/
-│   ├── prism.py                single entry point, 15 subcommands
+│   ├── mvstudio.py                single entry point, 15 subcommands
 │   └── lib/
 │       ├── beats.py            beat grid · bar snapping · 14.5 s segmentation · H3 duration contract
 │       ├── slicer.py           actually cuts audio (ffmpeg → afconvert → wave)
