@@ -101,6 +101,45 @@ class TestNoPrivateContent(unittest.TestCase):
         self.assertEqual(hits, [], u"写死了本机绝对路径：%s" % hits)
 
 
+# ==================================================================== 自述一致性
+class TestReadmeIsCurrent(unittest.TestCase):
+    """README 里的数字会烂掉 —— 让测试盯着它，别靠人记得改。"""
+
+    def _count(self, suite):
+        if isinstance(suite, unittest.TestSuite):
+            return sum(self._count(x) for x in suite)
+        return 1
+
+    def test_readme_test_count_matches_reality(self):
+        suite = unittest.TestLoader().discover(start_dir=HERE, top_level_dir=HERE)
+        n = self._count(suite)
+        readme = io.open(os.path.join(ROOT, "README.md"), encoding="utf-8").read()
+        import re as _re
+        found = sorted(set(_re.findall(r"(\d+) tests, zero dependencies", readme)))
+        self.assertIn("tests-%d%%20passing" % n, readme,
+                      u"README 徽章测试数是 %s，实际 %d"
+                      % (_re.findall(r"tests-(\d+)%%20passing", readme), n))
+        self.assertIn("Ran %d tests" % n, readme,
+                      u"README 示例输出写的是 %s，实际 %d"
+                      % (_re.findall(r"Ran (\d+) tests", readme), n))
+        self.assertEqual(found, [str(n)],
+                         u"README 正文写的是 %s，实际 %d" % (found, n))
+
+    def test_readme_mentions_the_2d_camera_limitation(self):
+        readme = io.open(os.path.join(ROOT, "README.md"), encoding="utf-8").read()
+        for k in (u"The camera never leaves the paper", u"运镜限制感",
+                  u"rostrum", u"multiplane"):
+            self.assertIn(k, readme, u"README 少了「2D 运镜限制」的内容：%s" % k)
+
+    def test_skill_name_matches_repo_name(self):
+        """SKILL.md 的 name 必须和仓库名一致，否则装到 DSH 里对不上。"""
+        skill = io.open(os.path.join(ROOT, "SKILL.md"), encoding="utf-8").read()
+        first = skill.split("---")[1]
+        name = [l.split(":", 1)[1].strip()
+                for l in first.splitlines() if l.startswith("name:")][0]
+        self.assertEqual(name, "2d-limited-mv-studio")
+
+
 # ==================================================================== config
 class TestConfig(unittest.TestCase):
     """配置被静默截断 = 后面所有判断都建立在半份配置上。必须钉死。"""

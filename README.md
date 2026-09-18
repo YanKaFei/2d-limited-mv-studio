@@ -14,7 +14,7 @@
 [![DSH Skill](https://img.shields.io/badge/DSH-agent%20skill-111111)](#install)
 [![Target](https://img.shields.io/badge/target-MiniMax%20H3-FF4E8A)](#platforms)
 [![Best on](https://img.shields.io/badge/best%20on-小云雀%20%C2%B7%20MiniMax%20Design-3DD6D0)](#platforms)
-[![Tests](https://img.shields.io/badge/tests-119%20passing-2E7D32)](#tests)
+[![Tests](https://img.shields.io/badge/tests-148%20passing-2E7D32)](#tests)
 [![Dependencies](https://img.shields.io/badge/dependencies-zero-8A9BA8)](#requirements)
 [![Camera](https://img.shields.io/badge/camera-2D%20limited%20%C2%B7%20no%203D-6B4FBB)](#the-camera-never-leaves-the-paper)
 
@@ -441,10 +441,10 @@ zero-dependency Python.
 
 ```bash
 python3 -m unittest discover -s tests -t tests
-# Ran 119 tests … OK
+# Ran 148 tests … OK
 ```
 
-119 tests, zero dependencies, including an end-to-end run (synthetic assets → `all` → the draft
+148 tests, zero dependencies, including an end-to-end run (synthetic assets → `all` → the draft
 must refuse to render → fill → render → validate → pack) and a **privacy guard** that fails the
 build if a project-specific name, a private prompt set or a hardcoded local path ever enters the
 package.
@@ -483,7 +483,7 @@ package.
 │       ├── miniyaml.py         tiny YAML reader (no PyYAML)
 │       └── common.py           paths, config, logging, degradation
 ├── references/                 method, vocabularies, official H3 guides
-└── tests/                      119 tests, zero dependencies
+└── tests/                      148 tests, zero dependencies
 ```
 
 ---
