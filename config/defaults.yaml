@@ -1,10 +1,10 @@
-# anime-mv-studio · 多风格融合舞蹈影像导演 · 默认配置
+# 2d-limited-mv-studio · 多风格融合舞蹈影像导演 · 默认配置
 # 这里只有「可调参数」。导演判断在 SKILL.md 和 references/ 里。
 
 project:
-  name: "anime-mv-studio"
+  name: "2d-limited-mv-studio"
   version: "1.0.0"
-  skill_name: "anime-mv-studio"
+  skill_name: "2d-limited-mv-studio"
 
 # ---------------------------------------------------------------- 输入闸门
 audio:

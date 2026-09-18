@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""mvstudio.py —— anime-mv-studio 统一入口。
+"""mvstudio.py —— 2d-limited-mv-studio 统一入口。
 
   doctor      环境体检（工具 / 模块 / 风格库 / 配置完整性）
   gate        第 0 步：材料闸门 + 时长闸门（>180s 直接失败）
@@ -92,7 +92,7 @@ def step_doctor(args):
     if args.json:
         common.emit(res, True)
     else:
-        common.echo(u"anime-mv-studio 环境体检")
+        common.echo(u"2d-limited-mv-studio 环境体检")
         common.echo(u"  Python      %s" % res["python"])
         for k, v in res["tools"].items():
             common.echo(u"  %-11s %s" % (k, v or u"缺失"))
@@ -799,7 +799,7 @@ ROUTES = ["mv", "ref", "i2va", "t2va"]
 def build_parser():
     ap = argparse.ArgumentParser(
         prog="mvstudio.py",
-        description=u"anime-mv-studio · 多风格融合舞蹈影像导演（MiniMax H3）")
+        description=u"2d-limited-mv-studio · 多风格融合舞蹈影像导演（MiniMax H3）")
     common.add_common_args(ap)
     sub = ap.add_subparsers(dest="cmd")
 

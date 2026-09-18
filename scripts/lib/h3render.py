@@ -879,7 +879,7 @@ def render_brief(plan, seg):
 
 
 # ------------------------------------------------------------------ 整包
-HEADER = u"""# anime-mv-studio · MiniMax H3 提示词包
+HEADER = u"""# 2d-limited-mv-studio · MiniMax H3 提示词包
 
 > 每条 prompt 都是 **H3 原生格式**，可整段复制粘贴。
 > 「导演简报」是给你看的，**不要**贴进模型——H3 前面有 Context-IR 做理解与改写，

@@ -1,8 +1,11 @@
 <div align="center">
 
-# anime-mv-studio
+# 2d-limited-mv-studio
 
-**二次元 MV 工坊 · One image, one song, many worlds.**
+**二次元 MV 工坊 · 2D 运镜限制 · One image, one song, many worlds.**
+
+*The limitation is the style.*
+*限制就是风格。*
 
 *The world mutates. The character does not.*
 *世界不断变异，角色始终稳定。*
@@ -13,6 +16,7 @@
 [![Best on](https://img.shields.io/badge/best%20on-小云雀%20%C2%B7%20MiniMax%20Design-3DD6D0)](#platforms)
 [![Tests](https://img.shields.io/badge/tests-119%20passing-2E7D32)](#tests)
 [![Dependencies](https://img.shields.io/badge/dependencies-zero-8A9BA8)](#requirements)
+[![Camera](https://img.shields.io/badge/camera-2D%20limited%20%C2%B7%20no%203D-6B4FBB)](#the-camera-never-leaves-the-paper)
 
 [English](#english) · [中文](#中文) · [Quick start](#quick-start) · [Platforms](#platforms) · [Endings](#the-last-gesture)
 
@@ -57,7 +61,7 @@ So the two numbers are deliberately kept apart:
 | usable | 14.5 s | the remaining **0.58 s is seam overlap** — hide the join inside the fastest motion |
 
 Naive rounding-up silently *truncates the music* (a 6 s request only delivers 5.875 s).
-`anime-mv-studio` picks the smallest integer whose delivered length still covers the audio.
+`2d-limited-mv-studio` picks the smallest integer whose delivered length still covers the audio.
 
 ### The six-section prompt
 
@@ -75,6 +79,53 @@ non_diegetic_music: N/A
 `N/A` is not an omission. **You already uploaded the song.** Nothing here asks a model to compose
 music — which also avoids the official failure mode of asking for music and forbidding it in the
 same prompt.
+
+### The camera never leaves the paper
+
+This is not a live-action camera that happens to be pointed at a drawing. **It is a camera
+standing over a stack of paper**, and that is the whole point.
+
+What the camera may do is bounded on purpose:
+
+- **No 3D camera.** No orbit through space, no drone rise, no fly-through, no perspective travel.
+  Depth comes from **layers** — foreground paper, the character cel, background illustration,
+  graphic overlay — never from a moving viewpoint.
+- **Motion is authored in 2D.** A rostrum move slides flat across the artwork with **zero
+  perspective change**. A cel slide keeps the background dead still while the character moves.
+  A multiplane parallax separates layers by speed — the only honest "depth of field" 2D has.
+- **Limited animation is the texture.** Held frames, animation on twos, stepped motion,
+  pose-to-pose, smear drawings. Smoothness is not the goal; a drawing that *behaves like a
+  drawing* is.
+- **Misregistration is a language, not an error.** Colour layers sliding apart by a few pixels
+  is how this skill says *an identity has come loose*.
+
+The motion vocabulary is capped at H3's **20 official terms** for exactly this reason — a bigger
+vocabulary would tempt the camera off the paper. What gets enriched instead is everything the
+camera *is looking at*: angle, composition, focus, and what the shot is for.
+
+> **The test we hold ourselves to:** if you removed every 3D camera move, would the film still
+> hold up? If not, it was never a 2D film.
+
+### The camera never leaves the paper — 运镜限制感
+
+这不是一台「碰巧对着画的实拍摄影机」，而是**一台架在纸堆上的摄影机**——这才是重点。
+
+摄影机被允许做什么，是被**刻意限死**的：
+
+- **不做 3D 运镜。** 不绕空间、不无人机上升、不飞越、不穿越透视。
+  深度只来自**图层**：前景纸 + 人物赛璐珞 + 背景插画 + 图形叠加，绝不来自移动的视点。
+- **运动在 2D 里被写出来。** 摄影台推移是画面**平移、透视完全不变**；
+  赛璐璐滑动是背景纹丝不动、只有人在动；多层视差靠图层速度差——
+  这是 2D 唯一诚实的那种「景深」。
+- **limited animation 是质感本身。** 定格、on twos、stepped motion、pose-to-pose、
+  smear drawing。**不追求丝滑**——追求的是「一张画在该有的样子里动」。
+- **错版是语言，不是事故。** 色层错开几个像素，是本技能说「身份松动了」的方式。
+
+运动词被压在 H3 官方那 **20 个**里，正是这个原因——词表一大，摄影机就想离开纸面。
+于是我们丰富的是摄影机**在看什么**：角度、构图、焦、以及这一下要揭示什么。
+
+> **我们拿来衡量自己的那条标准**：如果把所有 3D 运镜全拿掉，这条片子还立得住吗？
+> 立不住，那它本来就不是一条 2D 片。
 
 ### Camera: six layers, one vocabulary
 
@@ -114,7 +165,7 @@ Live-action terms are for *thinking*; everything emitted is mapped back to the o
 mapping target is a real official term — the skill will not teach you to write words the model
 ignores. Sources and the full tables: `references/camera-vocabulary.md`.
 
-### 运镜：六层，而不是一层
+### 运镜：六层，而不是一层（角度丰富，平面不变）
 
 H3 只认官方那 **20 个运动词**。所以「丰富运镜」不能靠编新词——`crane shot`、`whip pan`
 模型根本不读。丰富化只能靠**分层**：
@@ -135,7 +186,7 @@ H3 只认官方那 **20 个运动词**。所以「丰富运镜」不能靠编新
 ### The last gesture
 
 A standing pose is the laziest way to end a film. The last gesture is what the audience keeps.
-`anime-mv-studio` offers **eight directable endings**, ranked against the music's own ending character:
+`2d-limited-mv-studio` offers **eight directable endings**, ranked against the music's own ending character:
 
 | id | Ending | What happens |
 |---|---|---|
@@ -163,7 +214,7 @@ Two hard constraints follow, and one of them is a genuine design tension worth n
 
 1. **The style change happens *inside* the segment.** A chained first frame drags the previous
    segment's art style in with it. Rather than choosing between "connected" and "a new style every
-   segment", `anime-mv-studio` does both: `0–1.5 s` holds the previous drawing style and pose, then the
+   segment", `2d-limited-mv-studio` does both: `0–1.5 s` holds the previous drawing style and pose, then the
    world transitions *within the shot*. The transition becomes an event instead of a cut.
 2. **Do not change the pose while chaining.** A third-party field report (unverified — see
    `references/platform-playbook.md`) puts limb tearing at vertical displacement above **12 % of
@@ -227,7 +278,7 @@ H3 的 `duration` **只接受 4–15 的整数**；而它的帧网格（`17k+5`�
 | 可用 | 14.5 秒 | 多出的 **0.58 秒是接缝重叠量**——把缝藏在最快的那一下动作里 |
 
 单纯向上取整会**悄悄截断音乐**（请求 6 秒只交付 5.875 秒）。
-`anime-mv-studio` 取的是「实出时长仍能盖住音乐」的最小整数。
+`2d-limited-mv-studio` 取的是「实出时长仍能盖住音乐」的最小整数。
 
 ### 每条提示词的固定六段
 
@@ -246,7 +297,7 @@ non_diegetic_music: N/A
 ### 最后一个手势
 
 站定是最偷懒的收尾。观众记住的是最后一个动作。
-`anime-mv-studio` 提供 **八种可直接写进提示词的收尾效果**，并按音乐自己的收束性格排序
+`2d-limited-mv-studio` 提供 **八种可直接写进提示词的收尾效果**，并按音乐自己的收束性格排序
 （见上方英文表格 / `python3 scripts/mvstudio.py endings`）。
 
 每一种都**不改变人物身份**。**消失的是「画」，不是「人」。**
@@ -304,7 +355,7 @@ gate → analyze → lyrics → canon → threeview → styles → segments
 ## Quick start
 
 ```bash
-git clone <this repo> ~/Desktop/anime-mv-studio && cd ~/Desktop/anime-mv-studio
+git clone <this repo> ~/Desktop/2d-limited-mv-studio && cd ~/Desktop/2d-limited-mv-studio
 
 python3 scripts/mvstudio.py doctor          # environment check
 python3 scripts/mvstudio.py all             # deterministic pipeline
@@ -352,7 +403,7 @@ Full playbook, each platform's pitfalls, and the provenance and confidence of ev
 <a id="install"></a>
 
 ```bash
-bash install-to-dsh.sh ~/my-project    # symlink into <project>/.dsh/skills/anime-mv-studio
+bash install-to-dsh.sh ~/my-project    # symlink into <project>/.dsh/skills/2d-limited-mv-studio
 ```
 
 ---
@@ -403,7 +454,7 @@ package.
 ## Repository layout
 
 ```
-anime-mv-studio/
+2d-limited-mv-studio/
 ├── SKILL.md                    the skill itself — workflow, hard gates, DoD
 ├── config/defaults.yaml        tunable parameters (directorial judgement is not here)
 ├── scripts/

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""test_mvstudio.py —— anime-mv-studio 的行为规格测试（零第三方依赖）。
+"""test_mvstudio.py —— 2d-limited-mv-studio 的行为规格测试（零第三方依赖）。
 
 跑法：
     python3 -m unittest discover -s tests -t tests -v

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 把 anime-mv-studio 装到某个 DSH 项目（软链，便于原地修改）
+# 把 2d-limited-mv-studio 装到某个 DSH 项目（软链，便于原地修改）
 #
 #   bash install-to-dsh.sh                     # 默认装到当前目录
 #   bash install-to-dsh.sh /path/to/project
@@ -11,14 +11,14 @@ DEST="$DEST_ROOT/.dsh/skills"
 
 mkdir -p "$DEST"
 
-if [ -e "$DEST/anime-mv-studio" ] || [ -L "$DEST/anime-mv-studio" ]; then
-  echo "已存在 $DEST/anime-mv-studio —— 先备份为 anime-mv-studio.bak"
-  rm -rf "$DEST/anime-mv-studio.bak"
-  mv "$DEST/anime-mv-studio" "$DEST/anime-mv-studio.bak"
+if [ -e "$DEST/2d-limited-mv-studio" ] || [ -L "$DEST/2d-limited-mv-studio" ]; then
+  echo "已存在 $DEST/2d-limited-mv-studio —— 先备份为 2d-limited-mv-studio.bak"
+  rm -rf "$DEST/2d-limited-mv-studio.bak"
+  mv "$DEST/2d-limited-mv-studio" "$DEST/2d-limited-mv-studio.bak"
 fi
 
-ln -s "$SRC" "$DEST/anime-mv-studio"
-echo "✅ 已安装：$DEST/anime-mv-studio → $SRC"
+ln -s "$SRC" "$DEST/2d-limited-mv-studio"
+echo "✅ 已安装：$DEST/2d-limited-mv-studio → $SRC"
 echo
 echo "自检："
 python3 "$SRC/scripts/mvstudio.py" doctor || true

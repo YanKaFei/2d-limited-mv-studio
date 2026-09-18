@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# anime-mv-studio · 可选能力安装（核心管线零依赖，这些只是加分项）
+# 2d-limited-mv-studio · 可选能力安装（核心管线零依赖，这些只是加分项）
 #
 #   bash scripts/setup_env.sh            # numpy/librosa/soundfile/scipy
 #   bash scripts/setup_env.sh --asr      # 追加 faster-whisper
