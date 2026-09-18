@@ -33,6 +33,7 @@ STEP_LABELS = {
     "threeview": (u"三视图", u"转面表出图了、像同一个人"),
     "styles": (u"画风路线", u"这一条 MV 用哪条融合路线"),
     "segments": (u"分段与切点", u"14.5 秒的切点落在哪里、每段画风"),
+    "motion": (u"魔性动作", u"魔性度、重复的循环表、全片的记忆点动作"),
     "ending": (u"收尾效果", u"全片最后一下是什么（不一定是站定）"),
     "render": (u"H3 提示词", u"提示词包可以交付了"),
     "validate": (u"校验结果", u"校验里的问题都处理了"),
@@ -102,7 +103,7 @@ class Ledger(object):
     def required_for_render(self, plan):
         """渲染之前必须确认的步骤（含**每一条提示词**与**每一段尾帧**）。"""
         steps = ["gate", "analyze", "lyrics", "canon", "threeview", "styles",
-                 "segments", "ending"]
+                 "segments", "motion", "ending"]
         segs = (plan or {}).get("segments") or []
         for i, seg in enumerate(segs, 1):
             steps.append("prompt-%02d" % i)

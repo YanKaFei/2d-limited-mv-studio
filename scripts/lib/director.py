@@ -24,6 +24,10 @@ try:
     import camera as camera_mod
 except Exception:  # pragma: no cover
     camera_mod = None
+try:
+    import motion as motion_mod
+except Exception:  # pragma: no cover
+    motion_mod = None
 
 # 景别优先从 camera-library 的 shot_sizes 取（10 个有出处的景别）；
 # 库不可用时退回这一份等价的英文写法。
@@ -112,6 +116,21 @@ def energy_for(analysis, start, end):
             except Exception:
                 continue
     return "mid"
+
+
+def beat_range(start, end, grid):
+    """段的起止落在第几拍。**按时间求最近拍**，不要求边界正好在整拍上。
+
+    原来用 beats._index_of 做精确相等匹配，段边界只要差一点点就返回 None，
+    于是整段被判为「没有可靠拍网格」——降级路径被触发的频率远超预期。
+    """
+    if not grid:
+        return None
+    b0 = beats_mod.beat_at(grid, float(start))
+    b1 = beats_mod.beat_at(grid, float(end))
+    if b0 is None or b1 is None:
+        return None
+    return (b0, b1)
 
 
 def build_shots(seg, grid, cameras, shot_size_seed=0, min_shots=2, max_shots=4):
@@ -253,6 +272,7 @@ def build_draft(duration, analysis, lyric_lines, canon, segs, styles,
             "lyric_lines": inside,
             "lyric_carry_over": bool(carry),
             "energy": energy_for(analysis, s["start"], s["end"]),
+            "motion": None,          # 由 motion.build_all 填：魔性度 + 循环表
             "art_movement": per[i] if i < len(per) else pool[i % len(pool)],
             "animation_medium": animation_medium_for(analysis),
             "central_meaning": "",
@@ -280,6 +300,10 @@ def build_draft(duration, analysis, lyric_lines, canon, segs, styles,
             "hook_to_next": _draft(u"给下一段留的动作接口"),
             "shots": build_shots(s, grid, DEFAULT_CAMERAS, shot_size_seed=i),
         }
+        # 拍号：按时间求最近拍（原来用精确索引匹配，边界一差就变 None）
+        _br = beat_range(s["start"], s["end"], grid)
+        if _br:
+            seg["beat_start"], seg["beat_end"] = _br
         # 小节编号
         if s.get("bar_index") is not None:
             nxt = None
@@ -288,12 +312,13 @@ def build_draft(duration, analysis, lyric_lines, canon, segs, styles,
                     nxt = segs[j]["bar_index"] + 1
                     break
             seg["bar_end"] = nxt
-        nxt_beat = None
-        for j in range(i + 1, len(segs)):
-            if segs[j].get("beat_index") is not None:
-                nxt_beat = segs[j]["beat_index"]
-                break
-        seg["beat_end"] = nxt_beat
+        if not _br:
+            nxt_beat = None
+            for j in range(i + 1, len(segs)):
+                if segs[j].get("beat_index") is not None:
+                    nxt_beat = segs[j]["beat_index"]
+                    break
+            seg["beat_end"] = nxt_beat
         # 每镜挂上它覆盖到的歌词
         for sh in seg["shots"]:
             for ln in inside:
@@ -336,6 +361,7 @@ def build_draft(duration, analysis, lyric_lines, canon, segs, styles,
         "mv_concept": "",
         "logline": "",
         "ending": None,          # 由 endings.apply_ending 填；全片最后一下
+        "motion_design": {"hook_id": None},   # 由 motion.apply_hook 填；全片唯一 hook
         "visual_arc": [],
         "motif_dictionary": {},
         "lyric_semantic_map": [],
@@ -363,6 +389,12 @@ def build_draft(duration, analysis, lyric_lines, canon, segs, styles,
         "segments": out_segments,
         "quality_gates": {},
     }
+    # 魔性动作：逐段推魔性度 + 循环表（hook 由用户挑，见 mvstudio.py motion）
+    if motion_mod is not None:
+        try:
+            motion_mod.build_all(plan, analysis)
+        except Exception:
+            pass
     return plan
 
 
@@ -422,6 +454,15 @@ def render_worksheet(plan):
             lines.append(u"- [ ] `%s`：%s" % (f, s.get(f) or u"**待填**"))
         lines.append(u"- [ ] `background_lyric_elements`："
                      u"把这段歌词里的**实物**放进背景里（用户硬要求）")
+        _m = s.get("motion") or {}
+        if _m:
+            lines.append(u"- [ ] `motion`（魔性动作）：档 **%s**、动作单元 %s 拍、"
+                         u"重复 %s 次、变异点 %s、hook `%s`"
+                         u"　__想让这一段更魔性就调高 `viral_level`（0–3）__"
+                         % (_m.get("viral_name_cn") or u"—", _m.get("unit_beats"),
+                            _m.get("repeats"),
+                            _m.get("mutation_at") or u"—",
+                            _m.get("hook_id") or u"（还没挑）"))
         lines.append(u"- [ ] `style_prompt`：必须含 "
                      u"2D / limited animation / hand-drawn / flat composition")
         lines.append(u"- [ ] `content_prompt`：按歌词自然分段写（0–Xs / Xs–Ys …）")

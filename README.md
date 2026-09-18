@@ -14,7 +14,7 @@
 [![DSH Skill](https://img.shields.io/badge/DSH-agent%20skill-111111)](#install)
 [![Target](https://img.shields.io/badge/target-MiniMax%20H3-FF4E8A)](#platforms)
 [![Best on](https://img.shields.io/badge/best%20on-小云雀%20%C2%B7%20MiniMax%20Design-3DD6D0)](#platforms)
-[![Tests](https://img.shields.io/badge/tests-148%20passing-2E7D32)](#tests)
+[![Tests](https://img.shields.io/badge/tests-173%20passing-2E7D32)](#tests)
 [![Dependencies](https://img.shields.io/badge/dependencies-zero-8A9BA8)](#requirements)
 [![Camera](https://img.shields.io/badge/camera-2D%20limited%20%C2%B7%20no%203D-6B4FBB)](#the-camera-never-leaves-the-paper)
 
@@ -182,6 +182,60 @@ H3 只认官方那 **20 个运动词**。所以「丰富运镜」不能靠编新
 
 实拍术语只用于**思考**，输出前一律映射回官方词；测试强制每个映射目标都是真官方词。
 词表与来源见 `references/camera-vocabulary.md`。
+
+### Making the dance 魔性 (addictive)
+
+A dance becomes memorable not by being complex but by being **repeated until you can do it
+yourself**. So the motion layer is not a longer word list — it is a **repetition design**.
+
+| Layer | Field | What it decides |
+|---|---|---|
+| **Viral level** | `seg.motion.viral_level` | how hard this segment repeats — 0 restrained → 3 brainworm |
+| **Repeat schedule** | `seg.motion.*` | move-unit length, cycle length, repeat count, where it mutates, which variation |
+| **Hook** | `plan.motion_design.hook_id` | the film's **single** signature move, mandatory in every chorus |
+
+Viral level is derived per segment from the music — and **it escalates toward the end**, because
+魔性 is something you build and then detonate. Even on a flat-energy track you get
+verse-restrained → chorus-hooky → ending-brainworm.
+
+```bash
+python3 scripts/mvstudio.py motion                          # the menu + current design
+python3 scripts/mvstudio.py motion --hook shoulder_pop_8
+python3 scripts/mvstudio.py motion --viral 3                # whole film to brainworm
+python3 scripts/mvstudio.py motion --segment C2 --viral 0   # one segment restrained
+```
+
+**Eight hook moves**, each designed for a different flavour of addictive: a head that nods while
+the body stays perfectly still; eight shoulder-pops where *the count is the joke*; a stomp that
+pauses longer each time; a squat pulse whose squash-and-stretch is the fastest route to
+endearing awkwardness; a half-spin that stops short three times and then over-delivers.
+
+**Five repeat variations** — growing accent, double time, half time, half-beat offset canon, and
+*drop the last rep* (the hook you have been humming stops halfway). The hard rule: **a mutation
+varries the same move; it never replaces it.** Replace the move and the memory breaks.
+
+The schedule is **driven by the beat grid**, not by a guessed "repeat 4 times" — the same premise
+every published music-conditioned dance-generation model shares. We take the principle and none
+of the dependencies; the pipeline is still zero-dependency.
+
+### 让舞蹈「魔性」起来
+
+一支舞之所以洗脑，不是因为编舞复杂，恰恰是因为它**简单到你能跟着做，然后做了八遍**。
+所以动作层的核心不是更长的词表，而是**重复的设计**。
+
+魔性度**逐段从音乐推**，而且**往后递增**——魔性是攒起来再爆的。哪怕整首歌能量平坦，
+你也会得到 主歌克制 → 副歌魔性 → 结尾洗脑。
+
+**八种记忆点动作**，各治一种「停不下来」：身体完全不动只有头在点的**点头锁**；
+把计数本身变成笑点的**抖肩八连**；越停越久的**跺脚停顿**；
+挤压拉伸最出「憨」的**蹲弹**；差一半三次然后超额兑现的**半转重复**。
+
+**五种重复变体**——递增强调、双倍速、半速拖拍、错位半拍卡农，以及**末次截断**
+（你正在哼的那个动作突然只做一半）。铁律：**变异是同一个动作的变奏，绝不换动作。**
+换了动作，记忆点就断了。
+
+循环表由**拍网格**驱动，不是拍脑袋写「重复 4 次」——这条前提和所有已发表的
+音乐驱动舞蹈生成模型一致；我们只取原理，不取依赖，管线仍然零第三方依赖。
 
 ### The last gesture
 
@@ -441,10 +495,10 @@ zero-dependency Python.
 
 ```bash
 python3 -m unittest discover -s tests -t tests
-# Ran 148 tests … OK
+# Ran 173 tests … OK
 ```
 
-148 tests, zero dependencies, including an end-to-end run (synthetic assets → `all` → the draft
+173 tests, zero dependencies, including an end-to-end run (synthetic assets → `all` → the draft
 must refuse to render → fill → render → validate → pack) and a **privacy guard** that fails the
 build if a project-specific name, a private prompt set or a hardcoded local path ever enters the
 package.
@@ -466,6 +520,8 @@ package.
 │       ├── chain.py            last-frame chaining across segments
 │       ├── frames.py           frame capture (ffmpeg → AVFoundation → platform export)
 │       ├── endings.py          eight directable endings
+│       ├── motion.py           魔性动作：viral level · beat-driven repeat schedule · hook
+│       ├── camera.py           six-layer camera vocabulary (angles, framing, 2D moves)
 │       ├── styleroutes.py      six fusion routes through art history
 │       ├── threeview.py        character turnaround sheet
 │       ├── confirm.py          per-step confirmation ledger
@@ -483,7 +539,7 @@ package.
 │       ├── miniyaml.py         tiny YAML reader (no PyYAML)
 │       └── common.py           paths, config, logging, degradation
 ├── references/                 method, vocabularies, official H3 guides
-└── tests/                      148 tests, zero dependencies
+└── tests/                      173 tests, zero dependencies
 ```
 
 ---

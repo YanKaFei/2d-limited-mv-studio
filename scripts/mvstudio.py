@@ -37,6 +37,7 @@ import frames as frames_mod  # noqa: E402
 import gates as gates_mod  # noqa: E402
 import h3render  # noqa: E402
 import materials as materials_mod  # noqa: E402
+import motion as motion_mod  # noqa: E402
 import pack as pack_mod  # noqa: E402
 import platforms as platforms_mod  # noqa: E402
 import slicer as slicer_mod  # noqa: E402
@@ -605,6 +606,11 @@ def step_confirm(args):
     return confirm_mod.main(argv) or 0
 
 
+def step_motion(args):
+    argv = _passthrough(args, ["--hook", "--viral", "--segment", "--plan"])
+    return motion_mod.main(argv) or 0
+
+
 def step_camera(args):
     argv = _passthrough(args, ["--map"])
     return camera_mod.main(argv) or 0
@@ -899,6 +905,14 @@ def build_parser():
     p.add_argument("--revoke", default=None)
     p.add_argument("--plan", default=None)
     p.set_defaults(func=step_confirm)
+
+    p = sub.add_parser("motion", help=u"魔性动作设计（魔性度 / 循环表 / hook）")
+    common.add_common_args(p)
+    p.add_argument("--hook", default=None)
+    p.add_argument("--viral", type=int, default=None)
+    p.add_argument("--segment", default=None)
+    p.add_argument("--plan", default=None)
+    p.set_defaults(func=step_motion)
 
     p = sub.add_parser("camera", help=u"运镜分层库（景别/角度/构图/焦/2D 招）")
     common.add_common_args(p)

@@ -41,6 +41,10 @@ try:
     import camera as camera_mod
 except Exception:  # pragma: no cover
     camera_mod = None
+try:
+    import motion as motion_mod
+except Exception:  # pragma: no cover
+    motion_mod = None
 
 RENDER_CORE = ["hair", "eyes", "face", "costume", "accessories", "silhouette"]
 
@@ -696,6 +700,12 @@ def _mv_content_section(plan, seg, lang, shots):
                          "previous tail frame, or this segment will not connect."
                          % (seg.get("continuity_from_previous")
                             or "start from the same motion family"))
+
+    # 魔性动作：重复设计是**段级**指令，放在镜头之前，先定这一整段怎么跳
+    if motion_mod is not None:
+        _rep = motion_mod.render_schedule(plan, seg, lang)
+        if _rep:
+            lines.append(_rep)
 
     for i, sh in enumerate(shots, 1):
         t = float(sh.get("start") or 0.0)

@@ -101,6 +101,269 @@ class TestNoPrivateContent(unittest.TestCase):
         self.assertEqual(hits, [], u"写死了本机绝对路径：%s" % hits)
 
 
+# ==================================================================== 魔性动作
+class TestMotionDesign(unittest.TestCase):
+    """「魔性」= 高重复 + 可记忆 + 随能量递增。要有选项，也要可校验。"""
+
+    def _plan(self):
+        plan = TestH3Render()._plan()
+        plan["meta"]["lang"] = "zh"
+        plan["meta"]["h3_route"] = "mv"
+        plan["meta"]["bpm"] = 120.0
+        plan["meta"]["beat_sec"] = 0.5
+        plan["meta"]["bar_sec"] = 2.0
+        for s in plan["segments"]:
+            s["beat_start"] = 0
+            s["beat_end"] = 28
+        return plan
+
+    # ---------- 库 ----------
+    def test_viral_levels_are_four_and_ordered(self):
+        m = _mod("motion")
+        lv = m.viral_levels()
+        self.assertEqual([x["level"] for x in lv], [0, 1, 2, 3])
+        self.assertEqual([x["id"] for x in lv],
+                         ["restrained", "groove", "hooky", "brainworm"])
+        for x in lv:
+            lo, hi = x["repeat_range"]
+            self.assertLessEqual(lo, hi)
+            self.assertTrue(x["desc_zh"] and x["desc_en"])
+
+    def test_hook_menu_has_at_least_six_bilingual_hooks(self):
+        m = _mod("motion")
+        hooks = m.hooks()
+        self.assertGreaterEqual(len(hooks), 6)
+        ids = [h["id"] for h in hooks]
+        self.assertEqual(len(ids), len(set(ids)))
+        for h in hooks:
+            for k in ("id", "name_cn", "name_en", "body_zh", "body_en", "why_zh",
+                      "beats", "intensity"):
+                self.assertTrue(h.get(k), u"%s 缺 %s" % (h.get("id"), k))
+
+    def test_twelve_principles_present_and_referenced(self):
+        m = _mod("motion")
+        pr = m.principles()
+        self.assertEqual(len(pr), 12, u"动画原则应是 12 条")
+        known = {p["id"] for p in pr}
+        used = set()
+        for h in m.hooks():
+            for pid in h.get("principles") or []:
+                self.assertIn(pid, known, u"%s 引用了不存在的原则 %s" % (h["id"], pid))
+                used.add(pid)
+        self.assertGreaterEqual(len(used), 6, u"被 hook 引用的原则太少：%s" % used)
+
+    # ---------- 魔性度推算 ----------
+    def test_viral_level_rises_with_energy(self):
+        m = _mod("motion")
+        quiet = m.pick_viral_level({"energy": "quiet"}, {"bpm": 120})
+        peak = m.pick_viral_level({"energy": "peak"}, {"bpm": 120})
+        self.assertLess(quiet, peak, u"低谷与峰值的魔性度应该不同")
+
+    def test_viral_level_escalates_toward_the_end(self):
+        """魔性是**攒起来再爆**的：哪怕全曲能量平坦，后半段也该比开头更魔性。
+
+        实测踩到：没有峰值段时四段全是同一档，用户根本看不到「魔性」。
+        """
+        m = _mod("motion")
+        levels = [m.pick_viral_level({"energy": "mid"}, {"bpm": 120}, i=i, n=4)
+                  for i in range(4)]
+        self.assertEqual(levels, sorted(levels), u"魔性度不应随段落推进而下降：%s" % levels)
+        self.assertGreater(levels[-1], levels[0],
+                           u"结尾应当比开头更魔性：%s" % levels)
+
+    def test_escalation_does_not_apply_to_a_single_segment(self):
+        m = _mod("motion")
+        self.assertEqual(m.pick_viral_level({"energy": "mid"}, {"bpm": 120}, i=0, n=1),
+                         m.pick_viral_level({"energy": "mid"}, {"bpm": 120}))
+
+    def test_build_all_produces_variety_across_segments(self):
+        m = _mod("motion")
+        plan = self._plan()
+        for s in plan["segments"]:
+            s["energy"] = "mid"
+        plan = m.build_all(plan, {"bpm": 120.0, "beat_sec": 0.5})
+        got = [s["motion"]["viral_level"] for s in plan["segments"]]
+        self.assertGreater(len(set(got)), 1,
+                           u"全片能量平坦时也应有档位变化，实际 %s" % got)
+
+    def test_viral_level_clamped_to_range(self):
+        m = _mod("motion")
+        for e in ("quiet", "mid", "build", "peak", "breakdown", None):
+            lv = m.pick_viral_level({"energy": e}, {"bpm": 120})
+            self.assertGreaterEqual(lv, 0)
+            self.assertLessEqual(lv, 3)
+
+    # ---------- 循环表 ----------
+    def test_schedule_is_beat_driven_and_fits_the_segment(self):
+        m = _mod("motion")
+        seg = {"id": 1, "label": "C1", "beat_start": 0, "beat_end": 28,
+               "time_start": 0.0, "time_end": 14.0, "energy": "peak"}
+        sch = m.build_schedule(seg, {"bpm": 120.0, "beat_sec": 0.5}, level=2)
+        for k in ("viral_level", "viral_name", "unit_beats", "cycle_bars",
+                  "repeats", "mutation_at", "variations", "total_beats", "hook_id"):
+            self.assertIn(k, sch, u"循环表缺 %s" % k)
+        avail = seg["beat_end"] - seg["beat_start"]
+        self.assertLessEqual(sch["total_beats"], avail,
+                             u"循环表要求的拍数超出本段实际拍数")
+
+    def test_schedule_degrades_without_bpm(self):
+        m = _mod("motion")
+        seg = {"id": 1, "label": "C1", "time_start": 0.0, "time_end": 14.0,
+               "energy": "mid"}
+        sch = m.build_schedule(seg, {}, level=2)
+        self.assertTrue(sch.get("degraded"), u"没有 BPM 时应标记 degraded")
+        self.assertGreater(sch.get("repeats", 0), 0,
+                           u"没有 BPM 也要给出可用的循环次数")
+
+    def test_degraded_schedule_still_honours_the_level(self):
+        """没有拍网格时，**不能**把洗脑档压成「重复 1 次」——那不是退化，那是失效。"""
+        m = _mod("motion")
+        seg = {"id": 1, "label": "C1", "time_start": 0.0, "time_end": 14.3,
+               "energy": "peak"}
+        for lv in m.viral_levels():
+            sch = m.build_schedule(seg, {}, level=lv["level"])
+            lo = lv["repeat_range"][0]
+            self.assertGreaterEqual(
+                sch["repeats"], lo,
+                u"没有拍网格时 %s 档被压成 %d 次（应至少 %d）"
+                % (lv["id"], sch["repeats"], lo))
+            self.assertTrue(sch["degraded"], u"%s 档应标记 degraded" % lv["id"])
+
+    def test_beat_range_uses_time_not_exact_index(self):
+        """段边界很少正好落在整拍上 —— 用「找得到同一时刻」的写法，别用精确相等。"""
+        d = _mod("director")
+        b = _mod("beats")
+        grid = b.beat_grid(bpm=120.0, duration=30.0)     # 拍 0.5s
+        rng = d.beat_range(0.3, 14.9, grid)              # 都不是整拍
+        self.assertIsNotNone(rng)
+        b0, b1 = rng
+        self.assertIsNotNone(b0)
+        self.assertIsNotNone(b1)
+        self.assertLess(b0, b1)
+        self.assertAlmostEqual(b0, 1, delta=1)           # 0.3s ≈ 第 1 拍
+        self.assertAlmostEqual(b1, 30, delta=1)          # 14.9s ≈ 第 30 拍
+
+    def test_beat_range_is_none_without_grid(self):
+        d = _mod("director")
+        self.assertIsNone(d.beat_range(0.0, 10.0, None))
+
+    def test_higher_level_repeats_more(self):
+        m = _mod("motion")
+        seg = {"id": 1, "label": "C1", "beat_start": 0, "beat_end": 32,
+               "time_start": 0.0, "time_end": 16.0, "energy": "peak"}
+        a = m.build_schedule(seg, {"bpm": 120.0, "beat_sec": 0.5}, level=0)
+        b = m.build_schedule(seg, {"bpm": 120.0, "beat_sec": 0.5}, level=3)
+        self.assertLess(a["repeats"], b["repeats"],
+                        u"魔性度越高重复次数应越多")
+
+    def test_mutation_is_a_variation_not_a_new_move(self):
+        m = _mod("motion")
+        seg = {"id": 1, "label": "C1", "beat_start": 0, "beat_end": 32,
+               "time_start": 0.0, "time_end": 16.0, "energy": "peak"}
+        sch = m.build_schedule(seg, {"bpm": 120.0, "beat_sec": 0.5}, level=3)
+        known = {v["id"] for v in m.variations()}
+        for v in sch["variations"]:
+            self.assertIn(v, known, u"变异 %s 不在变体库里" % v)
+        self.assertTrue(sch["mutation_at"], u"洗脑档应有变异点")
+
+    # ---------- hook ----------
+    def test_only_one_hook_for_the_whole_film(self):
+        m = _mod("motion")
+        plan = self._plan()
+        m.apply_hook(plan, "head_bob_lock")
+        self.assertEqual(plan["motion_design"]["hook_id"], "head_bob_lock")
+        # 换一个 hook 应当替换而不是新增
+        m.apply_hook(plan, "squat_pulse")
+        self.assertEqual(plan["motion_design"]["hook_id"], "squat_pulse")
+
+    def test_unknown_hook_raises(self):
+        m = _mod("motion")
+        self.assertRaises(KeyError, m.apply_hook, self._plan(), "not_a_hook")
+
+    def test_chorus_must_carry_the_hook(self):
+        m = _mod("motion")
+        plan = self._plan()
+        m.apply_hook(plan, "head_bob_lock")
+        plan["segments"][0]["energy"] = "peak"
+        plan["segments"][1]["energy"] = "quiet"
+        plan = m.build_all(plan, {"bpm": 120.0, "beat_sec": 0.5})
+        self.assertEqual(plan["segments"][0]["motion"]["hook_id"], "head_bob_lock",
+                         u"副歌段没带上 hook")
+
+    def test_manual_level_is_not_overwritten(self):
+        """用户手改过的段，重跑不能被自动推算覆盖。"""
+        m = _mod("motion")
+        plan = self._plan()
+        plan["segments"][0]["energy"] = "peak"
+        plan["segments"][0]["motion"] = {"viral_level": 0, "manual": True}
+        plan = m.build_all(plan, {"bpm": 120.0, "beat_sec": 0.5})
+        self.assertEqual(plan["segments"][0]["motion"]["viral_level"], 0,
+                         u"手改的魔性度被覆盖了")
+
+    # ---------- 渲染 ----------
+    def test_prompt_carries_the_repetition_instruction(self):
+        h3 = _mod("h3render")
+        m = _mod("motion")
+        plan = self._plan()
+        plan["segments"][0]["energy"] = "peak"
+        m.apply_hook(plan, "shoulder_pop_8")
+        plan = m.build_all(plan, {"bpm": 120.0, "beat_sec": 0.5})
+        text = h3.render_segment(plan, plan["segments"][0], route="mv", lang="zh")
+        seg = text.split(u"内容提示词")[1].split("integrated_multimodal_description")[0]
+        self.assertIn(u"重复", seg, u"提示词里没有重复指令：%s" % seg[:200])
+        self.assertIn(u"抖肩八连", seg, u"提示词里没有 hook")
+
+    def test_old_plan_without_motion_still_renders(self):
+        h3 = _mod("h3render")
+        plan = self._plan()
+        for s in plan["segments"]:
+            s.pop("motion", None)
+        plan.pop("motion_design", None)
+        text = h3.render_segment(plan, plan["segments"][0], route="mv", lang="zh")
+        self.assertIn(u"内容提示词", text)
+
+    # ---------- 校验 ----------
+    def test_gates_reject_bad_viral_level(self):
+        gates = _mod("gates")
+        plan = self._plan()
+        plan["segments"][0]["motion"] = {"viral_level": 9}
+        res = gates.validate(plan, "")
+        self.assertFalse(res["passed"])
+        self.assertTrue(any(u"魔性" in p for p in res["problems"]),
+                        u"非法魔性度没被拦：%s" % res["problems"])
+
+    def test_gates_reject_unknown_hook(self):
+        gates = _mod("gates")
+        plan = self._plan()
+        plan["motion_design"] = {"hook_id": "not_a_hook"}
+        res = gates.validate(plan, "")
+        self.assertFalse(res["passed"])
+        self.assertTrue(any(u"hook" in p.lower() for p in res["problems"]),
+                        u"非法 hook 没被拦：%s" % res["problems"])
+
+    def test_gates_reject_schedule_that_cannot_fit(self):
+        gates = _mod("gates")
+        plan = self._plan()
+        plan["segments"][0]["motion"] = {"viral_level": 3, "total_beats": 999,
+                                         "beat_end": 28, "beat_start": 0}
+        res = gates.validate(plan, "")
+        self.assertFalse(res["passed"])
+        self.assertTrue(any(u"拍数" in p or u"放不下" in p for p in res["problems"]),
+                        u"放不下的循环表没被拦：%s" % res["problems"])
+
+    def test_broken_library_degrades(self):
+        m = _mod("motion")
+        saved = m._LIB_CACHE[0]
+        try:
+            m._LIB_CACHE[0] = {}
+            self.assertEqual(m.hooks(), [])
+            self.assertEqual(m.viral_levels(), [])
+            self.assertEqual(m.validate_plan({"segments": [{"motion": {"viral_level": 9}}]}),
+                             ([], []))
+        finally:
+            m._LIB_CACHE[0] = saved
+
+
 # ==================================================================== 自述一致性
 class TestReadmeIsCurrent(unittest.TestCase):
     """README 里的数字会烂掉 —— 让测试盯着它，别靠人记得改。"""
@@ -116,12 +379,12 @@ class TestReadmeIsCurrent(unittest.TestCase):
         readme = io.open(os.path.join(ROOT, "README.md"), encoding="utf-8").read()
         import re as _re
         found = sorted(set(_re.findall(r"(\d+) tests, zero dependencies", readme)))
-        self.assertIn("tests-%d%%20passing" % n, readme,
-                      u"README 徽章测试数是 %s，实际 %d"
-                      % (_re.findall(r"tests-(\d+)%%20passing", readme), n))
-        self.assertIn("Ran %d tests" % n, readme,
-                      u"README 示例输出写的是 %s，实际 %d"
-                      % (_re.findall(r"Ran (\d+) tests", readme), n))
+        badge = _re.findall(r"tests-(\d+)%20passing", readme)
+        self.assertTrue("tests-%d%%20passing" % n in readme,
+                        u"README 徽章测试数是 %s，实际 %d" % (badge, n))
+        ran = _re.findall(r"Ran (\d+) tests", readme)
+        self.assertTrue("Ran %d tests" % n in readme,
+                        u"README 示例输出写的是 %s，实际 %d" % (ran, n))
         self.assertEqual(found, [str(n)],
                          u"README 正文写的是 %s，实际 %d" % (found, n))
 

@@ -31,6 +31,10 @@ try:
     import camera as camera_mod
 except Exception:  # pragma: no cover
     camera_mod = None
+try:
+    import motion as motion_mod
+except Exception:  # pragma: no cover
+    motion_mod = None
 
 RENDER_CORE = ["hair", "eyes", "face", "costume", "accessories", "silhouette"]
 
@@ -346,6 +350,15 @@ def validate(plan, prompts_text="", strict=False):
                     problems.append(u"D 格式：段 %s %s" % (label, prob))
             for prob in camera_mod.check_camera_budget(s):
                 problems.append(u"D 格式：%s" % prob)
+
+    # ---------------------------------------------------------- 魔性动作
+    if motion_mod is not None:
+        try:
+            mprob, mwarn = motion_mod.validate_plan(plan)
+            problems.extend(u"D 格式：%s" % x for x in mprob)
+            warnings.extend(mwarn)
+        except Exception as exc:
+            warnings.append(u"魔性动作检查失败：%s" % exc)
 
     # ---------------------------------------------------------- 收尾效果
     # 只在 mv 路线强制：其它路线是格式保真用途，不强制创作决策

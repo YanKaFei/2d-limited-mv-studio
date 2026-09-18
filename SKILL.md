@@ -206,7 +206,7 @@ python3 scripts/mvstudio.py camera --map whip_pan # 实拍术语 → 官方词
 确认点（落盘在 `workspace/confirmations.json`，可查、可撤销）：
 
 ```
-gate → analyze → lyrics → canon → threeview → styles → segments → ending
+gate → analyze → lyrics → canon → threeview → styles → segments → motion → ending
   → prompt-01 … prompt-N     每一条提示词
   → chain-01  … chain-N      每一段的输出与尾帧
   → render → validate → pack
@@ -616,6 +616,8 @@ output/latest/
 [ ] 整条 MV 穿越 ≥3 种画风
 [ ] 每段 H3 prompt 结构完整、≤7000 字符、零 Markdown
 [ ] 音频段已真的切出来（或已产出切分清单并说明原因）
+[ ] 用户已选定全片唯一的 hook 动作，且副歌段都带上了它
+[ ] 每段的循环表放得下（总拍数 ≤ 本段实际拍数）
 [ ] 用户已从 endings 菜单里选定收尾效果，且末段提示词带上了它
 [ ] 每一条都用固定六段结构（人物与参考保持一致性 / 风格提示词 / 内容提示词 /
       integrated_multimodal_description / overall_soundscape / non_diegetic_music）
@@ -640,6 +642,7 @@ output/latest/
 | `references/art-medium-map.md` | 语义 → 媒介映射（风格库不可用时的降级） |
 | `references/threeview.md` | 三视图规范：为什么必须做、怎么用、检查单 |
 | `references/quality-gates.md` | 四组闸门、导演稿 Schema、渲染器硬闸门 |
+| `references/motion-design.md` | **魔性动作**：四档魔性度、节拍驱动的循环表、8 种 hook、12 动画原则、五条硬规矩、来源 |
 | `references/camera-vocabulary.md` | **运镜六层**：角度表、2D 专属招、实拍→官方映射、三条硬规矩、来源 |
 | `references/platform-playbook.md` | **小云雀 / MiniMax Design 落地手册**：切割、首尾帧、逐步骤确认、各自的坑、来源与可信度 |
 | `references/fallback-ladder.md` | 降级阶梯与失败信息模板 |

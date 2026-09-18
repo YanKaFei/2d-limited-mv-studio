@@ -1,0 +1,370 @@
+{
+  "meta": {
+    "name": "魔性动作设计库",
+    "version": "1.0.0",
+    "purpose": "把「动作魔性」做成可设计、可校验的层：魔性度档位 + 节拍驱动的循环表 + 全片唯一 hook + 2D 动画原则。",
+    "what_makes_it_viral": [
+      "动作单元极短（1–2 拍就能做完），不是 4 拍的长句",
+      "同一个动作连续重复 4–8 次，重复本身就是记忆点",
+      "轻微笨拙、不对称——太标准就不魔性",
+      "全片只有一个 hook 手势，副歌必出现",
+      "每次重拍锁死在同一个姿态上",
+      "变速重复（同动作 2 倍速/半速）与错位重复（晚半拍卡农）产生洗脑感",
+      "重复到第 8 次后突然只做一半——上瘾之后戒断一下"
+    ],
+    "honesty": "「魔性」是设计判断，不是可计算结论。下面是可复用的**手法**，不是保证。",
+    "sources": {
+      "beat_driven_motion": "公开的音乐驱动舞蹈生成研究（AMAP-ML/MACE-Dance SIGGRAPH 2026、verlab/Learning2Dance、libuyu/PhantomDanceDataset/DanceFormer、DeepVTuber/DanceNet3D、xjli360/SoulDance）——这些是**生成**动作的模型，本技能不接它们的依赖；只采纳可迁移的那条原理：动作强度与循环周期由节拍/起音驱动，而不是按秒拍脑袋。",
+      "animation_principles": "Disney 十二动画原则（动画工业通行知识；dylantarre/animation-principles 把它做成了 Claude Skill）——用于让重复动作有「动感」而不是机械重复。",
+      "2d_limited_motion": "2D 有限动画的既有做法：on twos / held pose / pose-to-pose / smear，以及本技能自己的判断：**重复必须落在重拍上**。"
+    }
+  },
+  "viral_levels": [
+    {
+      "id": "restrained",
+      "level": 0,
+      "name_cn": "克制",
+      "name_en": "Restrained",
+      "unit_beats": 2,
+      "cycle_bars": 2,
+      "repeat_range": [
+        1,
+        2
+      ],
+      "mutation_every": 1,
+      "variations": [],
+      "desc_zh": "动作不重复，叙事优先。适合主歌开头、安静段落。",
+      "desc_en": "No repetition; narrative first. For opening verses and quiet passages."
+    },
+    {
+      "id": "groove",
+      "level": 1,
+      "name_cn": "律动",
+      "name_en": "Groove",
+      "unit_beats": 2,
+      "cycle_bars": 2,
+      "repeat_range": [
+        2,
+        3
+      ],
+      "mutation_every": 2,
+      "variations": [
+        "accent_grow"
+      ],
+      "desc_zh": "有循环但每两轮变一次，动作幅度逐步加大。适合推进段。",
+      "desc_en": "A loop that mutates every other cycle, growing in amplitude. For build sections."
+    },
+    {
+      "id": "hooky",
+      "level": 2,
+      "name_cn": "魔性",
+      "name_en": "Hooky",
+      "unit_beats": 1,
+      "cycle_bars": 1,
+      "repeat_range": [
+        4,
+        6
+      ],
+      "mutation_every": 4,
+      "variations": [
+        "double_time",
+        "accent_grow"
+      ],
+      "desc_zh": "主歌克制、副歌起用同一个短动作高频重复；每 4 轮变异一次。**默认档。**",
+      "desc_en": "One short move repeated hard in the chorus, mutating every 4 cycles. The default."
+    },
+    {
+      "id": "brainworm",
+      "level": 3,
+      "name_cn": "洗脑",
+      "name_en": "Brainworm",
+      "unit_beats": 1,
+      "cycle_bars": 1,
+      "repeat_range": [
+        6,
+        10
+      ],
+      "mutation_every": 8,
+      "variations": [
+        "double_time",
+        "half_time",
+        "offset_half_beat",
+        "drop_last_rep"
+      ],
+      "desc_zh": "极端重复 + 变速 + 错位卡农，最后突然只做一半。适合最洗脑的副歌。",
+      "desc_en": "Extreme repetition, tempo shifts, half-beat canon, then a sudden half-rep drop."
+    }
+  ],
+  "variations": [
+    {
+      "id": "accent_grow",
+      "name_cn": "递增强调",
+      "name_en": "Growing accent",
+      "prompt_zh": "每一次重复都比上一次幅度更大一点，第 N 次放到最大",
+      "prompt_en": "each repetition is slightly larger than the last, peaking on the final one"
+    },
+    {
+      "id": "double_time",
+      "name_cn": "双倍速",
+      "name_en": "Double time",
+      "prompt_zh": "后半段把同一个动作变成双倍速，动作本身不变",
+      "prompt_en": "the same move at double speed in the back half; the move itself does not change"
+    },
+    {
+      "id": "half_time",
+      "name_cn": "半速拖拍",
+      "name_en": "Half time",
+      "prompt_zh": "把同一个动作放慢到半速，像卡带被拉慢",
+      "prompt_en": "the same move at half speed, like tape dragging"
+    },
+    {
+      "id": "offset_half_beat",
+      "name_cn": "错位半拍",
+      "name_en": "Half-beat offset",
+      "prompt_zh": "动作整体晚半拍进入，和音乐形成卡农",
+      "prompt_en": "the move enters half a beat late, making a canon against the music"
+    },
+    {
+      "id": "drop_last_rep",
+      "name_cn": "末次截断",
+      "name_en": "Drop the last rep",
+      "prompt_zh": "最后一次只做一半就停住，停半拍再接回来",
+      "prompt_en": "the final repetition stops halfway, holds for half a beat, then resumes"
+    }
+  ],
+  "hooks": [
+    {
+      "id": "head_bob_lock",
+      "name_cn": "点头锁",
+      "name_en": "Head-bob Lock",
+      "body_zh": "身体完全不动，只有头在每个重拍上向下点一下；点得越用力越好",
+      "body_en": "the body is completely still; only the head nods down on every downbeat",
+      "beats": 1,
+      "intensity": 1,
+      "principles": [
+        "timing",
+        "exaggeration"
+      ],
+      "why_zh": "「只有一部分在动」是最省也最魔性的做法，且完全保 2D 平面感",
+      "why_en": "Isolating one body part is the cheapest and most viral device, and it keeps the 2D plane intact",
+      "style_avoid": []
+    },
+    {
+      "id": "shoulder_pop_8",
+      "name_cn": "抖肩八连",
+      "name_en": "Shoulder-pop x8",
+      "body_zh": "同一侧肩膀连续抖八下，幅度逐下加大，第八下整个人向侧面弹出去",
+      "body_en": "one shoulder pops eight times in a row, growing, until the eighth throws the whole body sideways",
+      "beats": 1,
+      "intensity": 2,
+      "principles": [
+        "anticipation",
+        "exaggeration",
+        "follow_through"
+      ],
+      "why_zh": "计数本身就是笑点；第八下用 follow-through（头发/衣摆延迟）收",
+      "why_en": "The count IS the joke; the eighth pop lands with follow-through in hair and hem",
+      "style_avoid": []
+    },
+    {
+      "id": "stomp_pause",
+      "name_cn": "跺脚停顿",
+      "name_en": "Stomp & Pause",
+      "body_zh": "跺一下脚 → 定住半拍 → 再跺一下；每轮的停顿比上一次长一点",
+      "body_en": "stomp, hold for half a beat, stomp again; each pause is longer than the last",
+      "beats": 2,
+      "intensity": 2,
+      "principles": [
+        "timing",
+        "staging",
+        "slow_in_slow_out"
+      ],
+      "why_zh": "停顿制造期待，越停越长直到观众开始跟着数拍",
+      "why_en": "The pause builds anticipation until the audience starts counting with you",
+      "style_avoid": []
+    },
+    {
+      "id": "hand_frame_swap",
+      "name_cn": "比框换手",
+      "name_en": "Frame-swap Hands",
+      "body_zh": "双手在脸前比出一个方框，每个重拍换一次手（左右互换），框始终不散",
+      "body_en": "both hands frame the face; on every downbeat the hands swap sides while the frame never breaks",
+      "beats": 1,
+      "intensity": 1,
+      "principles": [
+        "arcs",
+        "timing",
+        "solid_drawing"
+      ],
+      "why_zh": "框可以当作构图装置用——框本身在画面里移动，平面感反而更强",
+      "why_en": "The frame doubles as a composition device; moving it inside the shot reinforces flatness",
+      "style_avoid": []
+    },
+    {
+      "id": "squat_pulse",
+      "name_cn": "蹲弹",
+      "name_en": "Squat Pulse",
+      "body_zh": "保持蹲姿，随节拍一上一下弹动；每次弹到最高点时肩线故意歪一下",
+      "body_en": "hold a squat and pulse up and down on the beat; at the top of each pulse the shoulders tilt wrong on purpose",
+      "beats": 1,
+      "intensity": 2,
+      "principles": [
+        "squash_stretch",
+        "exaggeration",
+        "appeal"
+      ],
+      "why_zh": "挤压拉伸是最容易做出「憨」的一条，而「憨」正是魔性的核心",
+      "why_en": "Squash and stretch is the fastest route to endearing awkwardness, which is the core of viral",
+      "style_avoid": []
+    },
+    {
+      "id": "point_walk",
+      "name_cn": "指指走",
+      "name_en": "Point & Step",
+      "body_zh": "食指交替指向画面左侧与右侧，身体跟着小幅度平移；指的方向和脚的方向相反",
+      "body_en": "the index finger points left, then right, while the body shifts slightly; the pointing opposes the footwork",
+      "beats": 2,
+      "intensity": 2,
+      "principles": [
+        "arcs",
+        "secondary_action",
+        "staging"
+      ],
+      "why_zh": "反向协调（手指东脚往西）看着别扭但停不下来，是魔性的常用配方",
+      "why_en": "Contradictory coordination reads as off but will not let you look away",
+      "style_avoid": []
+    },
+    {
+      "id": "half_spin_repeat",
+      "name_cn": "半转重复",
+      "name_en": "Half-spin Repeat",
+      "body_zh": "每次只转半圈就停住，连续三次；第四次突然转满一整圈",
+      "body_en": "turn only half a rotation and stop, three times; the fourth turns a full circle without warning",
+      "beats": 2,
+      "intensity": 3,
+      "principles": [
+        "anticipation",
+        "exaggeration",
+        "timing"
+      ],
+      "why_zh": "「始终差一半」建立期待，第四下超额兑现——这是结构性的爽点",
+      "why_en": "Always stopping halfway builds expectation; the fourth over-delivers. That is structural payoff",
+      "style_avoid": [
+        "op-art"
+      ]
+    },
+    {
+      "id": "mirror_hands",
+      "name_cn": "镜像手",
+      "name_en": "Mirror Hands",
+      "body_zh": "左右手做相反动作，节奏错开半拍；两只手永远不同时到位",
+      "body_en": "the two hands do opposite moves offset by half a beat; they are never in position at the same time",
+      "beats": 2,
+      "intensity": 1,
+      "principles": [
+        "follow_through",
+        "timing",
+        "arcs"
+      ],
+      "why_zh": "错半拍 = 天然卡农，不改变人物身份就能做出「另一个自己」的错觉",
+      "why_en": "A half-beat offset is a built-in canon; it suggests a double without touching the canon",
+      "style_avoid": []
+    }
+  ],
+  "principles": [
+    {
+      "id": "squash_stretch",
+      "name_cn": "挤压与拉伸",
+      "name_en": "Squash & Stretch",
+      "apply_zh": "蹲弹类动作：落地压扁、起跳拉长；2D 里就是改赛璐璐的形状"
+    },
+    {
+      "id": "anticipation",
+      "name_cn": "预备动作",
+      "name_en": "Anticipation",
+      "apply_zh": "抖肩/转身前先反向蓄一下；魔性动作的「起手」全靠它"
+    },
+    {
+      "id": "staging",
+      "name_cn": "表演布局",
+      "name_en": "Staging",
+      "apply_zh": "让 hook 手势始终落在画面最清楚的位置（三分点或正中）"
+    },
+    {
+      "id": "pose_to_pose",
+      "name_cn": "姿势对姿势",
+      "name_en": "Pose-to-Pose",
+      "apply_zh": "2D 有限动画的主力：先定关键姿势，再补中间帧；重复的就是关键姿势"
+    },
+    {
+      "id": "follow_through",
+      "name_cn": "跟随与重叠",
+      "name_en": "Follow-through & Overlapping",
+      "apply_zh": "头发、衣摆、袖口晚半拍；重复动作靠它才不僵"
+    },
+    {
+      "id": "slow_in_slow_out",
+      "name_cn": "慢入慢出",
+      "name_en": "Slow In / Slow Out",
+      "apply_zh": "「停住半拍」的质感来源；也是踩点感的来源"
+    },
+    {
+      "id": "arcs",
+      "name_cn": "弧形运动",
+      "name_en": "Arcs",
+      "apply_zh": "手的轨迹要走弧线，不要直线来回——直线看起来像机器"
+    },
+    {
+      "id": "secondary_action",
+      "name_cn": "次要动作",
+      "name_en": "Secondary Action",
+      "apply_zh": "头部小幅跟随、指尖抖动；给重复动作加信息量"
+    },
+    {
+      "id": "timing",
+      "name_cn": "节奏",
+      "name_en": "Timing",
+      "apply_zh": "动作必须锁在重拍上；这是全片唯一不可让步的一条"
+    },
+    {
+      "id": "exaggeration",
+      "name_cn": "夸张",
+      "name_en": "Exaggeration",
+      "apply_zh": "魔性 = 夸张。「稍微大一点」等于没做，要大到有点过分"
+    },
+    {
+      "id": "solid_drawing",
+      "name_cn": "扎实的造型",
+      "name_en": "Solid Drawing",
+      "apply_zh": "重复最容易画崩比例——重复动作恰恰更需要守 Canon"
+    },
+    {
+      "id": "appeal",
+      "name_cn": "吸引力",
+      "name_en": "Appeal",
+      "apply_zh": "「憨」也是一种吸引力；可爱不是幼稚，是让人愿意再看一遍"
+    }
+  ],
+  "rules": {
+    "hook_is_singular": {
+      "zh": "全片**只有一张** hook。多张等于没有记忆点。",
+      "en": "One hook per film. Two hooks is zero hooks."
+    },
+    "chorus_mandatory": {
+      "zh": "副歌（peak 段）必须出现 hook，且至少一次完整循环。",
+      "en": "The hook must appear in every peak section, at least one full cycle."
+    },
+    "repeat_on_downbeat": {
+      "zh": "重复的起点必须落在重拍上；落不到重拍就不要重复。",
+      "en": "Repetition starts on a downbeat. If it cannot, do not repeat."
+    },
+    "mutation_not_new_move": {
+      "zh": "变异是**同一个动作**的变奏，不是换一个动作。",
+      "en": "A mutation varies the same move; it does not replace it."
+    },
+    "must_fit_the_segment": {
+      "zh": "循环表总拍数不能超过本段实际拍数——写不动作的要求等于废纸。",
+      "en": "The schedule must fit inside the segment, or it is unperformable."
+    }
+  }
+}
