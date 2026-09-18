@@ -76,6 +76,62 @@ non_diegetic_music: N/A
 music — which also avoids the official failure mode of asking for music and forbidding it in the
 same prompt.
 
+### Camera: six layers, one vocabulary
+
+H3 recognises exactly **20 camera-motion words** — and nothing else. So "richer camera work"
+cannot come from inventing terms; `crane shot` and `whip pan` simply are not read. The enrichment
+comes from **layering** instead:
+
+```
+shot size → angle → composition → focus → official motion word → subject–camera relation → what it reveals
+```
+
+| Layer | Count | Examples |
+|---|---|---|
+| Shot size | 10 | extreme wide → extreme close-up |
+| **Angle** | **12** | low / high / dutch / overhead / worm's-eye / over-the-shoulder / POV / **flat frontal (2D-native)** |
+| Composition | 12 | rule of thirds, symmetry, negative space, frame-within-frame, poster layout |
+| Focus | 4 | deep, shallow, soft, **rack** |
+| **2D-native moves** | **10** | rostrum camera, multiplane parallax, cel slide, **registration shift**, paper wipe, iris, hard-crop reframe, split screen, exposure flash, held-frame drift |
+| Relation | 7 | follows / leads / matches pace / observes / reveals / opposes / circles |
+
+**The missing layer was never motion — it was *angle*.** A library of nothing but pans and
+push-ins is why the camera felt thin.
+
+Three rules, all machine-checked:
+
+1. **A locked shot gets an explicit lock line.** Models drift, especially on wide shots. Every
+   `Static Shot` gets *"The camera is entirely motionless for the duration of the scene, with
+   movement only occurring from the subject."*
+2. **Every moving shot must name its relation to the subject.** Without it the two motions run on
+   separate clocks — visible as jitter and a character who appears to glide.
+3. **Rich camera work is not a camera showreel.** At most **half** the shots in a segment may move;
+   the rest are locked, with the energy supplied by **2D-native moves** — a locked camera over a
+   living drawing.
+
+Live-action terms are for *thinking*; everything emitted is mapped back to the official 20
+(`crane_up → Pedestal Up`, `whip_pan → Pan Right + large + fast`). A test enforces that every
+mapping target is a real official term — the skill will not teach you to write words the model
+ignores. Sources and the full tables: `references/camera-vocabulary.md`.
+
+### 运镜：六层，而不是一层
+
+H3 只认官方那 **20 个运动词**。所以「丰富运镜」不能靠编新词——`crane shot`、`whip pan`
+模型根本不读。丰富化只能靠**分层**：
+
+```
+景别 → 角度 → 构图 → 焦 → 官方运动词 → 相机与主体的关系 → 这一下要揭示什么
+```
+
+**原来缺的从来不是运动词，是角度层。** 一个只有平移推拉的库，镜头当然是薄的。
+
+三条硬规矩，全部机器校验：**固定镜头必须再用自然语言加一次锁**（模型在远景上会自己飘）；
+**运动镜头必须写清与主体的关系**（不写就抖动、人物像在飘）；
+**运镜丰富 ≠ 运镜展览**（每段运动镜头 ≤ 一半，其余靠 2D 专属招提供动感——机位锁死、画面在动）。
+
+实拍术语只用于**思考**，输出前一律映射回官方词；测试强制每个映射目标都是真官方词。
+词表与来源见 `references/camera-vocabulary.md`。
+
 ### The last gesture
 
 A standing pose is the laziest way to end a film. The last gesture is what the audience keeps.

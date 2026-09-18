@@ -1,7 +1,7 @@
 {
   "meta": {
     "name": "运镜库",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "source": "骨架取自 MiniMax H3 官方运镜词表；风格兼容性取自 art-aesthetic-vault 各流派卡的『五、AI 视频层』",
     "rule": "写进提示词时，必须用 official_terms 里的官方词，不能只写中文描述。复合运镜要写明两个词『同时进行』。",
     "families": [
@@ -13,7 +13,21 @@
       "翻滚",
       "手持",
       "复合"
-    ]
+    ],
+    "layers": [
+      "shot_size",
+      "angle",
+      "camera(官方运动词)",
+      "framing",
+      "focus"
+    ],
+    "provenance": {
+      "official_terms": "MiniMax H3 官方运镜词表（唯一被模型承认的运动词）",
+      "shot_size/angle/composition/focus": "取自两个公开的摄影参考：Runway 的 AI camera prompts 参考表（help.runwayml.com / runway.com/resources/ai-camera-prompts）与 patipanpeel/alt-cinematography-reference 的 content.json。",
+      "moves_2d": "2D 动画工业术语（摄影台 rostrum / 多层摄影 multiplane / 赛璐璐滑动 / 套印偏移），外加本技能为「平面感」补的几招。",
+      "why_layered": "H3 只认官方那 20 个运动词。所以丰富角度不能靠编新词，而是把「景别 / 角度 / 构图 / 焦」做成**独立于运动词**的层，用自然语言写，最后仍然只把运动交给官方词表。",
+      "verified": "每个电影术语都在 cinematic_to_official 里映射回官方词；tests/test_mvstudio.py::TestCameraEnrichment 会强制这条不变量。"
+    }
   },
   "cameras": [
     {
@@ -658,6 +672,527 @@
         "roll",
         "dolly_zoom"
       ]
+    }
+  },
+  "shot_sizes": [
+    {
+      "id": "extreme_wide_shot",
+      "name_cn": "大远景",
+      "name_en": "Extreme Wide Shot",
+      "prompt_en": "extreme wide shot, tiny subject, vast flat environment",
+      "solo": true,
+      "use": "开场/收尾；人物很小，世界很大"
+    },
+    {
+      "id": "wide_shot",
+      "name_cn": "远景",
+      "name_en": "Wide / Establishing",
+      "prompt_en": "wide shot, full body small in the environment",
+      "solo": true,
+      "use": "交代环境；歌词在讲「世界」时用"
+    },
+    {
+      "id": "full_shot",
+      "name_cn": "全景",
+      "name_en": "Full Shot",
+      "prompt_en": "full shot, head to toe, clear silhouette",
+      "solo": true,
+      "use": "舞蹈动作的主场；看得见全身姿态"
+    },
+    {
+      "id": "medium_long_shot",
+      "name_cn": "中远景（牛仔镜）",
+      "name_en": "Medium Long / Cowboy",
+      "prompt_en": "medium long shot, knees-up framing",
+      "solo": true,
+      "use": "看得见手又看得见腿，动作与表情兼顾"
+    },
+    {
+      "id": "medium_shot",
+      "name_cn": "中景",
+      "name_en": "Medium Shot",
+      "prompt_en": "medium shot, waist-up framing",
+      "solo": true,
+      "use": "主力镜头；身体语言 + 表情"
+    },
+    {
+      "id": "medium_close_up",
+      "name_cn": "中近景",
+      "name_en": "Medium Close-Up",
+      "prompt_en": "medium close-up, chest-up framing",
+      "solo": true,
+      "use": "表情清楚，肩线还在"
+    },
+    {
+      "id": "close_up",
+      "name_cn": "近景",
+      "name_en": "Close-Up",
+      "prompt_en": "close-up, shoulders up, sharp eyes",
+      "solo": true,
+      "use": "情绪与反应；重拍上的强调"
+    },
+    {
+      "id": "extreme_close_up",
+      "name_cn": "大特写",
+      "name_en": "Extreme Close-Up",
+      "prompt_en": "extreme close-up, a single detail fills the frame",
+      "solo": true,
+      "use": "质感与细节：眼睛、手指、配饰"
+    },
+    {
+      "id": "insert_shot",
+      "name_cn": "插入镜头",
+      "name_en": "Insert / Cutaway",
+      "prompt_en": "insert shot, a detailed object, tactile texture",
+      "solo": true,
+      "use": "把歌词里的**实物**单独给一个镜头（背景元素的前景化）"
+    },
+    {
+      "id": "two_shot",
+      "name_cn": "双人镜",
+      "name_en": "Two-Shot",
+      "prompt_en": "two-shot, two subjects in frame",
+      "solo": false,
+      "use": "⚠️ 本技能是单人 MV —— **默认不要用**；只有在歌词明确需要「另一个自己」时才配合镜像层使用"
+    }
+  ],
+  "angles": [
+    {
+      "id": "eye_level",
+      "name_cn": "平视",
+      "name_en": "Eye-Level",
+      "prompt_en": "eye-level angle, natural perspective",
+      "use": "中性、可信；对话感"
+    },
+    {
+      "id": "low_angle",
+      "name_cn": "仰角",
+      "name_en": "Low Angle",
+      "prompt_en": "low angle, looking up at her, heroic scale",
+      "use": "力量感、把她抬高；副歌/高潮好用"
+    },
+    {
+      "id": "high_angle",
+      "name_cn": "俯角",
+      "name_en": "High Angle",
+      "prompt_en": "high angle, looking down at her, vulnerable subject",
+      "use": "脆弱、被观看、被评价——**『被审视』类歌词的首选**"
+    },
+    {
+      "id": "dutch_canted",
+      "name_cn": "荷兰角（倾斜）",
+      "name_en": "Dutch / Canted",
+      "prompt_en": "dutch angle, tilted horizon, psychological unease",
+      "use": "失衡、不安。**全片用 1–2 次就够**，多了变廉价"
+    },
+    {
+      "id": "overhead_top",
+      "name_cn": "正俯视",
+      "name_en": "Overhead / Top Shot",
+      "prompt_en": "overhead shot, top-down view, graphic composition",
+      "use": "把舞蹈看成平面图形——最接近 2D 平面构成的一个角度"
+    },
+    {
+      "id": "birds_eye",
+      "name_cn": "鸟瞰",
+      "name_en": "Bird's-Eye View",
+      "prompt_en": "bird's-eye view, subject as a shape in a flat landscape",
+      "use": "人在图案里；适合民俗几何/满屏纹样路线"
+    },
+    {
+      "id": "worms_eye",
+      "name_cn": "虫视",
+      "name_en": "Worm's-Eye View",
+      "prompt_en": "worm's-eye view, extreme low angle, towering figure",
+      "use": "压迫感极强；**慎用**，容易让人物比例失真"
+    },
+    {
+      "id": "over_the_shoulder",
+      "name_cn": "过肩",
+      "name_en": "Over-the-Shoulder",
+      "prompt_en": "over-the-shoulder framing, foreground shoulder",
+      "use": "前景遮挡——2D 里正好做成**前景纸层**"
+    },
+    {
+      "id": "pov",
+      "name_cn": "主观视角",
+      "name_en": "POV",
+      "prompt_en": "POV, the frame is what she sees",
+      "use": "沉浸；适合「看见了什么」的歌词"
+    },
+    {
+      "id": "reverse_angle",
+      "name_cn": "反打",
+      "name_en": "Reverse Angle",
+      "prompt_en": "reverse angle, matching eyeline, reaction shot",
+      "use": "换到对面看；和上一镜成对使用"
+    },
+    {
+      "id": "flat_frontal",
+      "name_cn": "完全正面（平面化）",
+      "name_en": "Flat Frontal",
+      "prompt_en": "straight-on flat frontal angle, she faces the camera directly",
+      "use": "**2D 专属**：取消透视，人物与画面平行——最「动画」的一个角度"
+    },
+    {
+      "id": "rear_view",
+      "name_cn": "背面",
+      "name_en": "Rear View",
+      "prompt_en": "rear view, she faces away from the camera",
+      "use": "背对观众跳舞；⚠️ 别停留太久，会丢失脸部识别"
+    }
+  ],
+  "compositions": [
+    {
+      "id": "rule_of_thirds",
+      "name_cn": "三分法",
+      "name_en": "Rule of Thirds",
+      "prompt_en": "subject on the right third, rule of thirds composition"
+    },
+    {
+      "id": "golden_ratio",
+      "name_cn": "黄金分割",
+      "name_en": "Golden Ratio",
+      "prompt_en": "golden ratio composition, the eye follows a natural spiral"
+    },
+    {
+      "id": "leading_lines",
+      "name_cn": "引导线",
+      "name_en": "Leading Lines",
+      "prompt_en": "strong leading lines guiding the eye to her"
+    },
+    {
+      "id": "frame_within_frame",
+      "name_cn": "框中框",
+      "name_en": "Frame Within a Frame",
+      "prompt_en": "frame within a frame, a foreground frame encloses her"
+    },
+    {
+      "id": "symmetry_centered",
+      "name_cn": "对称居中",
+      "name_en": "Symmetry / Centered",
+      "prompt_en": "perfectly centered, symmetrical flat frame"
+    },
+    {
+      "id": "lead_room_headroom",
+      "name_cn": "留白与头顶空间",
+      "name_en": "Lead Room & Headroom",
+      "prompt_en": "ample lead room, clean headroom"
+    },
+    {
+      "id": "depth_layering",
+      "name_cn": "景深分层",
+      "name_en": "Depth / Layering",
+      "prompt_en": "foreground paper layer, character cel, background illustration"
+    },
+    {
+      "id": "the_180_rule",
+      "name_cn": "180 度规则",
+      "name_en": "The 180° Rule",
+      "prompt_en": "consistent screen direction, matching eyeline"
+    },
+    {
+      "id": "the_30_rule",
+      "name_cn": "30 度规则",
+      "name_en": "The 30° Rule",
+      "prompt_en": "30-degree angle shift between cuts, same subject"
+    },
+    {
+      "id": "negative_space",
+      "name_cn": "负空间",
+      "name_en": "Negative Space",
+      "prompt_en": "she is small against a large area of empty flat colour"
+    },
+    {
+      "id": "graphic_occlusion",
+      "name_cn": "图形遮挡",
+      "name_en": "Graphic Occlusion",
+      "prompt_en": "a hard-edged graphic band occludes part of the frame"
+    },
+    {
+      "id": "poster_layout",
+      "name_cn": "海报式排版",
+      "name_en": "Poster Layout",
+      "prompt_en": "the frame is composed like a printed poster, hard crop, flat shapes"
+    }
+  ],
+  "focus_terms": [
+    {
+      "id": "deep_focus",
+      "name_cn": "深焦",
+      "name_en": "Deep Focus",
+      "prompt_en": "everything in the frame is equally sharp"
+    },
+    {
+      "id": "shallow_focus",
+      "name_cn": "浅焦",
+      "name_en": "Shallow Focus",
+      "prompt_en": "only the character layer is sharp, background softened"
+    },
+    {
+      "id": "soft_focus",
+      "name_cn": "柔焦",
+      "name_en": "Soft Focus",
+      "prompt_en": "soft diffused focus across the whole frame, memory-like"
+    },
+    {
+      "id": "rack_focus",
+      "name_cn": "移焦",
+      "name_en": "Rack Focus",
+      "prompt_en": "focus shifts from the foreground object to her in the background without moving the camera"
+    }
+  ],
+  "moves_2d": [
+    {
+      "id": "rostrum",
+      "name_cn": "摄影台推移",
+      "name_en": "Rostrum / Camera-stand move",
+      "prompt_en": "a flat rostrum-camera move straight across the artwork, no perspective change at all",
+      "flat": true,
+      "use": "最纯的 2D 运镜：画面像被放在摄影台下平移，透视完全不变"
+    },
+    {
+      "id": "multiplane_parallax",
+      "name_cn": "多层视差",
+      "name_en": "Multiplane Parallax",
+      "prompt_en": "layers separate: the foreground paper moves fastest, the background illustration barely moves",
+      "flat": true,
+      "use": "用图层速度差造深度——**2D 唯一正当的「景深」**"
+    },
+    {
+      "id": "cel_slide",
+      "name_cn": "赛璐璐滑动",
+      "name_en": "Cel Slide / Peg-bar shift",
+      "prompt_en": "the character cel slides against a completely static background",
+      "flat": true,
+      "use": "背景不动、人动。卡点最省的一招"
+    },
+    {
+      "id": "registration_shift",
+      "name_cn": "套印偏移",
+      "name_en": "Registration Shift",
+      "prompt_en": "the whole frame shifts out of registration; colour layers slide apart by a few pixels",
+      "flat": true,
+      "use": "先锋性的主力：错版就是「身份不稳」的视觉语法"
+    },
+    {
+      "id": "paper_wipe",
+      "name_cn": "纸张推移",
+      "name_en": "Paper Wipe",
+      "prompt_en": "a sheet of paper slides across the frame and wipes it",
+      "flat": true,
+      "use": "转场；比 dissolve 有材质感"
+    },
+    {
+      "id": "iris_2d",
+      "name_cn": "圆形遮罩",
+      "name_en": "Iris",
+      "prompt_en": "a hard-edged circular iris closes down over the frame",
+      "flat": true,
+      "use": "收束或强调；默片语法，放在实验段落很成立"
+    },
+    {
+      "id": "hard_crop_reframe",
+      "name_cn": "硬裁切重构",
+      "name_en": "Hard Crop Reframe",
+      "prompt_en": "the frame hard-crops to a new composition inside the same artwork",
+      "flat": true,
+      "use": "不动机位，只改裁切——最省的一次「换镜」"
+    },
+    {
+      "id": "split_screen",
+      "name_cn": "分屏",
+      "name_en": "Split Screen",
+      "prompt_en": "the frame divides into two flat panels showing the same character",
+      "flat": true,
+      "use": "「另一个自己」用这个，**不改变人物 Canon**"
+    },
+    {
+      "id": "exposure_flash",
+      "name_cn": "曝光闪白",
+      "name_en": "Exposure Flash",
+      "prompt_en": "the frame flashes to pure white for two frames on the beat",
+      "flat": true,
+      "use": "重拍上的强调；抽帧手感的关键"
+    },
+    {
+      "id": "hold_frame_drift",
+      "name_cn": "定格微移",
+      "name_en": "Held Frame with Drift",
+      "prompt_en": "the drawing is held on a single frame while the paper underneath drifts very slightly",
+      "flat": true,
+      "use": "「不动」但不死板；quiet 段落的主力"
+    }
+  ],
+  "cinematic_to_official": {
+    "dolly_in": {
+      "official": "Push In",
+      "amplitude": "with small amplitude",
+      "speed": "at slow speed",
+      "why": "机位真的前进、背景随之变化——不是变焦"
+    },
+    "dolly_out": {
+      "official": "Pull Out",
+      "speed": "at slow speed",
+      "why": "收尾/揭示；环境在人物周围展开"
+    },
+    "crash_zoom": {
+      "official": "Zoom In",
+      "amplitude": "with large amplitude",
+      "speed": "at fast speed",
+      "why": "极速变焦＝突然强调。**注意是变焦不是推轨**，透视不变，在 2D 里正好等于放大原画"
+    },
+    "whip_pan": {
+      "official": "Pan Right",
+      "amplitude": "with large amplitude",
+      "speed": "at fast speed",
+      "why": "快速横摇带运动模糊——两个重拍之间最高效的转场"
+    },
+    "slow_pan_reveal": {
+      "official": "Pan Right",
+      "amplitude": "with small amplitude",
+      "speed": "at slow speed",
+      "why": "慢摇揭景；歌词在讲「世界」时用"
+    },
+    "tilt_reveal": {
+      "official": "Tilt Up",
+      "speed": "at slow speed",
+      "why": "自下而上揭示；适合「抬头看见什么」的歌词"
+    },
+    "crane_up": {
+      "official": "Pedestal Up",
+      "speed": "at slow speed",
+      "why": "2D 里用整个机位上升代替摇臂；**不要用 drone**"
+    },
+    "crane_down": {
+      "official": "Pedestal Down",
+      "speed": "at slow speed",
+      "why": "降下来压场；收尾可用"
+    },
+    "drone_rise": {
+      "official": "Pedestal Up",
+      "speed": "at slow speed",
+      "why": "⚠️ 实拍无人机在 2D MV 里是错语汇。降到 Pedestal Up，并且只在远景用"
+    },
+    "orbit": {
+      "official": "Arc Shot",
+      "amplitude": "with large amplitude",
+      "why": "绕一整圈；2D 里等于多层视差绕行，别指望真透视"
+    },
+    "arc_soft": {
+      "official": "Arc Shot",
+      "amplitude": "with small amplitude",
+      "speed": "at slow speed",
+      "why": "不绕满一圈的弧线；给静止主体加运动"
+    },
+    "steadicam": {
+      "official": "Tracking Shot",
+      "speed": "at slow speed",
+      "why": "平稳跟拍；比 handheld 干净"
+    },
+    "handheld": {
+      "official": "Shake Slightly",
+      "speed": "at slow speed",
+      "why": "轻微抖动＝纪录质感。**2D MV 里建议只用在 1–2 个镜头**，多了会破坏平面感"
+    },
+    "locked_off": {
+      "official": "Static Shot",
+      "why": "完全不动。让动作自己承担画面"
+    },
+    "truck_side": {
+      "official": "Truck Left",
+      "speed": "at slow speed",
+      "why": "机位横向平移，与主体平行——跟走位最自然"
+    },
+    "vertigo_dolly_zoom": {
+      "official": "Zoom In",
+      "with": "Truck Right",
+      "amplitude": "with small amplitude",
+      "why": "希区柯克变焦＝变焦与机位反向同时进行。2D 里是压扁背景的图形效果，**全片最多用一次**"
+    },
+    "pull_back_reveal": {
+      "official": "Pull Out",
+      "amplitude": "with large amplitude",
+      "speed": "at slow speed",
+      "why": "拉远揭示全貌；末段「先看见人再看见世界」"
+    },
+    "roll_dutch": {
+      "official": "Roll Clockwise",
+      "amplitude": "with small amplitude",
+      "why": "画面翻滚；情绪失衡时才用"
+    },
+    "pov_swing": {
+      "official": "POV",
+      "why": "主观视角；转成她看到的东西"
+    },
+    "push_in_tension": {
+      "official": "Push In",
+      "amplitude": "with small amplitude",
+      "speed": "at slow speed",
+      "why": "缓慢逼近＝积累张力；用在副歌前最后一小节"
+    }
+  },
+  "relations": [
+    {
+      "id": "follows",
+      "en": "the camera follows her",
+      "zh": "摄影机跟着她走"
+    },
+    {
+      "id": "leads",
+      "en": "the camera leads her, backing away as she advances",
+      "zh": "摄影机在她前面引导，她进它退"
+    },
+    {
+      "id": "matches_pace",
+      "en": "the camera moves at exactly her pace",
+      "zh": "摄影机与她的速度完全一致"
+    },
+    {
+      "id": "observes",
+      "en": "the camera stays still and simply watches her",
+      "zh": "摄影机不动，只是看着她"
+    },
+    {
+      "id": "reveals_behind",
+      "en": "the camera moves to reveal what is behind her",
+      "zh": "摄影机移开，露出她身后的东西"
+    },
+    {
+      "id": "opposes",
+      "en": "the camera moves against her direction",
+      "zh": "摄影机与她的方向相反地移动"
+    },
+    {
+      "id": "circles_static_subject",
+      "en": "the camera circles her while she stays in place",
+      "zh": "她不动，摄影机绕她转"
+    }
+  ],
+  "rules": {
+    "formula": "[景别] + [角度] + [运动 + 方向 + 速度 + 与主体的关系] + [主体与动作] + [这个镜头要揭示什么]",
+    "static_lock": {
+      "en": "The camera is entirely motionless for the duration of the scene, with movement only occurring from the subject.",
+      "zh": "整段镜头，摄影机完全静止不动；画面里只有主体在动。",
+      "why": "实测结论：固定镜头是最难落地的一条，模型天生要制造运动，尤其在大远景上会自己飘。必须用自然语言把锁再上一遍。"
+    },
+    "dont_stack_verbs": {
+      "en": "Describe what enters or gets revealed at each phase instead of stacking movement verbs.",
+      "zh": "不要堆动词（「环绕 + 推近 + 上升」），改成分阶段描述画面里出现了什么。"
+    },
+    "subject_camera_relationship": {
+      "en": "Always join the camera to the subject with a relationship verb.",
+      "zh": "必须写清相机与主体的关系，否则模型会让两个运动各走各的——表现为抖动、人物像在飘。"
+    },
+    "dolly_is_not_zoom": {
+      "en": "Dolly moves the camera (background shifts); zoom magnifies the lens (no perspective change).",
+      "zh": "推轨＝机位移动、背景随之变化；变焦＝镜头放大、透视不变。2D 里变焦＝放大原画，推轨＝多层视差，两者是不同的事。"
+    },
+    "no_3d_language": {
+      "zh": "禁止 3D 运镜词（3D orbit / drone / FPV / fly-through / spiral）。校验器会拦。"
+    },
+    "purpose_required": {
+      "zh": "每个镜头都要能回答「这一下要揭示什么」。只是换个景别 → 用运镜，不要切。"
     }
   }
 }

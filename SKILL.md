@@ -156,6 +156,49 @@ python3 scripts/mvstudio.py confirm --step ending
 
 ---
 
+## 0.66 运镜：六层，而不是一层
+
+**H3 只认它官方那 20 个运动词。** 所以「丰富角度」不能靠编新词，只能靠分层：
+
+```
+景别 shot_size  →  角度 angle  →  构图 framing  →  焦 focus
+      →  官方运动词 camera（+ 幅度 + 速度）  →  相机与主体的关系  →  这一下要揭示什么
+```
+
+| 层 | 数量 | 说明 |
+|---|---|---|
+| 景别 | 10 | 大远景 → 大特写 |
+| **角度** | **12** | 平视/仰角/俯角/荷兰角/正俯视/鸟瞰/虫视/过肩/主观/反打 + **完全正面（2D 专属）** |
+| 构图 | 12 | 三分法/对称/引导线/框中框/负空间/图形遮挡/海报排版… |
+| 焦 | 4 | 深焦/浅焦/柔焦/**移焦** |
+| **2D 专属** | **10** | 摄影台推移/多层视差/赛璐璐滑动/**套印偏移**/纸张推移/圆形遮罩/硬裁切/分屏/曝光闪白/定格微移 |
+| 关系 | 7 | 跟随/引导/同步/静观/揭示/反向/绕转 |
+
+> **原来缺的不是运动词，是角度层。** 只有平移推拉当然单调。
+
+### 三条硬规矩
+
+1. **固定镜头必须再用自然语言加一次锁。** 模型天生要制造运动，远景会自己飘：
+   *"The camera is entirely motionless for the duration of the scene,
+   with movement only occurring from the subject."*
+2. **运动镜头必须写「相机与主体的关系」**（跟随 / 引导 / 同步 / 静观…）。
+   不写 → 模型让两个运动各走各的，**表现为抖动、人物像在飘**。
+3. **运镜丰富 ≠ 运镜展览。** 每段运动镜头 **≤ 一半**，其余压回固定镜头；
+   多出来的动感交给 **2D 专属招**（机位不动、画面在动）。
+
+```bash
+python3 scripts/mvstudio.py camera --md          # 打印完整词表
+python3 scripts/mvstudio.py camera --map whip_pan # 实拍术语 → 官方词
+```
+
+实拍术语（`crane_up` / `whip_pan` / `dolly zoom`）**只用于思考**，
+输出前一律经 `cinematic_to_official` 映射回官方词——20 条映射表，
+每条带幅度、速度与理由。**不变量：每个映射目标都在官方 20 词内**（测试强制）。
+
+完整说明与来源见 `references/camera-vocabulary.md`。
+
+---
+
 ## 0.7 每一个步骤都要让用户确认
 
 确认点（落盘在 `workspace/confirmations.json`，可查、可撤销）：
@@ -595,6 +638,7 @@ output/latest/
 | `references/art-medium-map.md` | 语义 → 媒介映射（风格库不可用时的降级） |
 | `references/threeview.md` | 三视图规范：为什么必须做、怎么用、检查单 |
 | `references/quality-gates.md` | 四组闸门、导演稿 Schema、渲染器硬闸门 |
+| `references/camera-vocabulary.md` | **运镜六层**：角度表、2D 专属招、实拍→官方映射、三条硬规矩、来源 |
 | `references/platform-playbook.md` | **小云雀 / MiniMax Design 落地手册**：切割、首尾帧、逐步骤确认、各自的坑、来源与可信度 |
 | `references/fallback-ladder.md` | 降级阶梯与失败信息模板 |
 | `references/github-sources.md` | 需要从 GitHub 补的东西在哪、怎么用 |

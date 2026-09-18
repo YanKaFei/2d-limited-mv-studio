@@ -528,11 +528,13 @@ class TestH3Render(unittest.TestCase):
                      {"index": 1, "start": 0.0, "end": 7.0, "beat_start": 0, "beat_end": 14,
                       "camera": "Static Shot", "camera_amplitude": "",
                       "camera_speed": "", "shot_size": "medium shot",
+                      "camera_relation": "observes",
                       "action": "she plants her weight and sweeps one arm across the water",
                       "cut": "hard cut", "lyric": u"我把影子留在水面"},
                      {"index": 2, "start": 7.0, "end": 14.5, "beat_start": 14, "beat_end": 28,
                       "camera": "Push In", "camera_amplitude": "with small amplitude",
                       "camera_speed": "at slow speed", "shot_size": "close-up",
+                      "camera_relation": "opposes",
                       "action": "her reflection ripples and doubles",
                       "cut": "hard cut", "lyric": u"我把影子留在水面"}],
                  "content_prompt": "0-7s ... 7-14.5s ...",
@@ -557,6 +559,7 @@ class TestH3Render(unittest.TestCase):
                      {"index": 1, "start": 0.0, "end": 14.5, "beat_start": 0, "beat_end": 28,
                       "camera": "Pan Right", "camera_amplitude": "with large amplitude",
                       "camera_speed": "at slow speed", "shot_size": "wide shot",
+                      "camera_relation": "reveals_behind",
                       "action": "she keeps dancing as the palette changes behind her",
                       "cut": "none", "lyric": u"夕阳把池塘染成蓝色"}],
                  "content_prompt": "0-14.5s ...",
@@ -1066,6 +1069,306 @@ class TestEndings(unittest.TestCase):
             self.assertIn(e["name_en"], md)
 
 
+# ==================================================================== 运镜/角度库
+class TestCameraEnrichment(unittest.TestCase):
+    """2D MV 也要有丰富的**角度**，不只是平移推拉。
+
+    硬约束：MiniMax H3 只认它官方那 20 个运镜词，自造词不认。
+    所以丰富化的方式不是编新词，而是分三层：
+      shot_size（景别）· angle（角度）· camera（官方运动词）· framing（构图）
+    并且**每一个电影术语都必须能映射回官方词**——否则就是在教用户写废词。
+    """
+
+    def test_angle_layer_exists_and_is_bilingual(self):
+        cam = _mod("camera")
+        ang = cam.angles()
+        self.assertGreaterEqual(len(ang), 9, u"角度太少：%d" % len(ang))
+        for a in ang:
+            for k in ("id", "name_cn", "name_en", "prompt_en", "use") :
+                self.assertTrue(a.get(k), u"%s 缺 %s" % (a.get("id"), k))
+
+    def test_composition_layer_exists(self):
+        cam = _mod("camera")
+        comp = cam.compositions()
+        self.assertGreaterEqual(len(comp), 9, u"构图项太少：%d" % len(comp))
+        for c in comp:
+            self.assertTrue(c.get("prompt_en"), u"%s 缺 prompt_en" % c.get("id"))
+
+    def test_focus_layer_exists(self):
+        cam = _mod("camera")
+        f = cam.focus_terms()
+        self.assertGreaterEqual(len(f), 4)
+        ids = [x["id"] for x in f]
+        self.assertIn("rack_focus", ids, u"少了「移焦」—— 换注意力最省的一招")
+
+    def test_sixty_shot_sizes_are_replaced_by_a_grounded_set(self):
+        cam = _mod("camera")
+        sizes = cam.shot_sizes()
+        self.assertGreaterEqual(len(sizes), 8)
+        ids = [x["id"] for x in sizes]
+        for need in ("extreme_close_up", "close_up", "medium_shot", "full_shot",
+                     "wide_shot"):
+            self.assertIn(need, ids, u"景别缺 %s" % need)
+
+    def test_every_cinematic_term_maps_to_an_official_h3_term(self):
+        """最要紧的一条不变量：丰富化不能教用户写 H3 不认的词。"""
+        cam = _mod("camera")
+        official = set(common.config()["output"]["camera_official_terms"])
+        table = cam.cinematic_map()
+        self.assertGreaterEqual(len(table), 15, u"电影术语映射表太小")
+        for term, spec in table.items():
+            self.assertIn(spec["official"], official,
+                          u"%s 映射到了非官方词 %s" % (term, spec["official"]))
+            self.assertTrue(spec.get("why"), u"%s 没写为什么这么映射" % term)
+            amp = spec.get("amplitude")
+            spd = spec.get("speed")
+            if amp:
+                self.assertIn(amp, common.config()["output"]["camera_amplitude"])
+            if spd:
+                self.assertIn(spd, common.config()["output"]["camera_speed"])
+
+    def test_2d_native_moves_exist_and_stay_flat(self):
+        """2D 专属的那几招：这是本技能和实拍运镜库的区别所在。"""
+        cam = _mod("camera")
+        moves = cam.moves_2d()
+        ids = [m["id"] for m in moves]
+        for need in ("rostrum", "multiplane_parallax", "cel_slide",
+                     "registration_shift"):
+            self.assertIn(need, ids, u"缺 2D 专属运镜 %s" % need)
+        for m in moves:
+            blob = json.dumps(m, ensure_ascii=False).lower()
+            for bad in ("3d orbit", "drone", "fpv"):
+                self.assertNotIn(bad, blob, u"%s 里混入了 3D 运镜" % m["id"])
+
+    def test_static_lock_line_exists(self):
+        """模型最容易在「固定镜头」上飘——必须有自然语言的加锁句。"""
+        cam = _mod("camera")
+        line = cam.static_lock_line("en")
+        self.assertIn("motionless", line.lower())
+        self.assertTrue(cam.static_lock_line("zh"))
+
+    def test_relationship_verb_is_required(self):
+        """相机与主体的关系不写清 → 抖动、人物像在飘。"""
+        cam = _mod("camera")
+        rel = cam.relations()
+        self.assertGreaterEqual(len(rel), 5)
+        for r in rel:
+            self.assertTrue(r.get("en") and r.get("zh"))
+
+    def test_renderer_emits_angle_and_purpose(self):
+        h3 = _mod("h3render")
+        plan = TestH3Render()._plan()
+        plan["segments"][0]["shots"][0].update({
+            "angle": "low_angle", "framing": "rule_of_thirds",
+            "focus": "shallow_focus", "camera_relation": "follows",
+            "purpose": "reveal the mark on her arm"})
+        text = h3.render_segment(plan, plan["segments"][0], route="mv", lang="en")
+        low = text.lower()
+        self.assertIn("low angle", low, u"没有写角度")
+        self.assertIn("rule of thirds", low, u"没有写构图")
+        self.assertIn("follows", low, u"没有写相机与主体的关系")
+        self.assertIn("reveal the mark", low, u"没有写这个镜头要揭示什么")
+
+    def test_renderer_adds_static_lock_for_locked_shot(self):
+        h3 = _mod("h3render")
+        plan = TestH3Render()._plan()
+        sh = plan["segments"][0]["shots"][0]
+        sh["camera"] = "Static Shot"
+        sh.pop("angle", None)
+        text = h3.render_segment(plan, plan["segments"][0], route="mv", lang="en")
+        self.assertIn("motionless", text.lower(),
+                      u"固定镜头没有加锁句，模型会飘")
+
+    def test_director_assigns_varied_angles_within_a_segment(self):
+        d = _mod("director")
+        plan = TestH3Render()._plan()
+        shots = d.build_shots({"start": 0.0, "end": 30.0, "index": 1, "label": "C1"},
+                              None, ["Static Shot", "Push In", "Pan Right"])
+        angles = [s.get("angle") for s in shots]
+        self.assertTrue(all(angles), u"有镜头没分到角度：%s" % angles)
+        self.assertGreater(len(set(angles)), 1, u"同一段里角度全一样：%s" % angles)
+
+    def test_moving_shots_are_capped_at_half(self):
+        """运镜丰富 ≠ 运镜展览。每段运动镜头 ≤ 一半，其余留给 fixed。"""
+        d = _mod("director")
+        for end in (14.5, 20.0, 30.0, 45.0):
+            shots = d.build_shots({"start": 0.0, "end": end, "index": 1, "label": "C1"},
+                                  None, ["Push In", "Pan Left", "Truck Right",
+                                         "Pull Out", "Zoom In", "Arc Shot"])
+            moving = [x for x in shots if x.get("camera") != "Static Shot"]
+            cap = -(-len(shots) // 2)          # ceil(n/2)
+            self.assertLessEqual(len(moving), cap,
+                                 u"%.1fs 段：%d 镜里 %d 个运动镜，超过上限 %d"
+                                 % (end, len(shots), len(moving), cap))
+
+    def test_gates_reject_too_many_moving_shots(self):
+        gates = _mod("gates")
+        plan = TestH3Render()._plan()
+        plan["meta"]["h3_route"] = "mv"
+        seg = plan["segments"][0]
+        for sh in seg["shots"]:
+            sh["camera"] = "Push In"          # 2/2 都是运动镜
+            sh["camera_relation"] = "opposes"
+        res = gates.validate(plan, "")
+        self.assertFalse(res["passed"])
+        self.assertTrue(any(u"运动镜头" in p for p in res["problems"]),
+                        u"运动镜头超量没被拦：%s" % res["problems"])
+
+    def test_moving_shot_without_relation_is_caught(self):
+        gates = _mod("gates")
+        plan = TestH3Render()._plan()
+        plan["meta"]["h3_route"] = "mv"
+        plan["segments"][0]["shots"][1]["camera_relation"] = ""
+        res = gates.validate(plan, "")
+        self.assertFalse(res["passed"])
+        self.assertTrue(any(u"关系" in p for p in res["problems"]),
+                        u"运动镜没写相机关系没被拦：%s" % res["problems"])
+
+    def test_old_plan_without_new_fields_still_renders(self):
+        """向后兼容：老导演稿没有 angle/framing 也要能出，不能炸。"""
+        h3 = _mod("h3render")
+        plan = TestH3Render()._plan()
+        for seg in plan["segments"]:
+            for sh in seg["shots"]:
+                for k in ("angle", "framing", "focus", "camera_relation",
+                          "purpose", "move_2d"):
+                    sh.pop(k, None)
+        text = h3.render_segment(plan, plan["segments"][0], route="mv", lang="zh")
+        self.assertIn(u"内容提示词", text)
+        self.assertIn("non_diegetic_music: N/A", text)
+
+    def test_broken_library_degrades_instead_of_crashing(self):
+        cam = _mod("camera")
+        saved = cam._LIB_CACHE[0]
+        try:
+            cam._LIB_CACHE[0] = {}            # 模拟库被改坏
+            self.assertEqual(cam.angles(), [])
+            self.assertEqual(cam.cinematic_map(), {})
+            self.assertEqual(cam.describe_shot({"angle": "low_angle"},
+                                               "en")["text"], "")
+            # 库坏了就不该再拿库去判 angle/framing 合不合法（那会把整片判红）
+            probs = cam.validate_shot({"angle": "low_angle", "framing": "whatever"})
+            self.assertEqual([x for x in probs if u"不在" in x], [],
+                             u"库没加载起来时仍然在拿库判合法性：%s" % probs)
+            # 不依赖库的规则照常生效
+            self.assertTrue(any(u"关系" in x
+                                for x in cam.validate_shot({"camera": "Push In"})))
+        finally:
+            cam._LIB_CACHE[0] = saved
+
+    def test_2d_moves_land_on_locked_shots(self):
+        """2D 专属招应该加在**机位不动**的镜头上：静止机位 + 画面仍在动。"""
+        d = _mod("director")
+        shots = d.build_shots({"start": 0.0, "end": 30.0, "index": 1, "label": "C1"},
+                              None, ["Static Shot", "Push In", "Pan Right"])
+        locked = [s for s in shots if s["camera"] == "Static Shot"]
+        self.assertTrue(locked, u"样本里应该至少有一个固定镜头")
+        self.assertTrue(any(s.get("move_2d") for s in locked),
+                        u"固定镜头上没有安排任何 2D 专属运镜")
+
+    def test_draft_markers_never_reach_a_rendered_prompt(self):
+        """提示词里绝不能出现「（草稿：…）」——那是给人看的占位符。"""
+        h3 = _mod("h3render")
+        plan = TestH3Render()._plan()
+        plan["segments"][0]["shots"][0]["action"] = u"（草稿：这一镜身体怎么动）"
+        probs = h3.check_ready(plan)
+        self.assertTrue(any(u"草稿" in p for p in probs),
+                        u"草稿标记没被拦住：%s" % probs[:4])
+
+    def test_draft_purpose_also_blocks_rendering(self):
+        h3 = _mod("h3render")
+        plan = TestH3Render()._plan()
+        plan["segments"][0]["shots"][0]["purpose"] = u"（草稿：这一下要揭示什么）"
+        probs = h3.check_ready(plan)
+        self.assertTrue(any(u"草稿" in p for p in probs),
+                        u"草稿 purpose 没被拦住：%s" % probs[:4])
+
+    def test_2d_moves_vary_across_segments(self):
+        """不同段不该老是同一招 —— 丰富度要真的落到输出上。"""
+        d = _mod("director")
+        firsts, allp = [], []
+        for seed in range(6):
+            shots = d.build_shots(
+                {"start": 0.0, "end": 14.5, "index": seed + 1, "label": "C%d" % (seed + 1)},
+                None, ["Static Shot", "Push In", "Pan Right"], shot_size_seed=seed)
+            picked = [x.get("move_2d") for x in shots if x.get("move_2d")]
+            allp += picked
+            firsts.append(picked[0] if picked else None)
+        self.assertGreater(len(set(allp)), 1, u"只用到一种 2D 招：%s" % allp)
+        self.assertGreater(len(set(firsts)), 1,
+                           u"每一段的**第一招**都是同一个，等于没有变化：%s" % firsts)
+
+    def test_shot_size_is_not_stated_twice(self):
+        h3 = _mod("h3render")
+        plan = TestH3Render()._plan()
+        sh = plan["segments"][0]["shots"][0]
+        sh.update({"shot_size_id": "medium_shot", "angle": "low_angle",
+                   "framing": "rule_of_thirds", "focus": "deep_focus",
+                   "camera_relation": "observes", "purpose": "reveal the mark"})
+        text = h3.render_segment(plan, plan["segments"][0], route="mv", lang="en")
+        seg = text.split("content_prompt:")[1].split("integrated_multimodal_description")[0]
+        self.assertEqual(seg.lower().count("medium shot"), 1,
+                         u"景别写了两遍：%s" % seg[:260].replace("\n", " "))
+
+    def test_zh_layers_use_chinese_names(self):
+        h3 = _mod("h3render")
+        plan = TestH3Render()._plan()
+        sh = plan["segments"][0]["shots"][0]
+        sh.update({"shot_size_id": "medium_shot", "angle": "low_angle",
+                   "framing": "rule_of_thirds", "focus": "deep_focus",
+                   "camera_relation": "observes", "purpose": u"露出身后的水面"})
+        text = h3.render_segment(plan, plan["segments"][0], route="mv", lang="zh")
+        seg = text.split(u"内容提示词")[1].split("integrated_multimodal_description")[0]
+        self.assertIn(u"中景", seg, u"中文块里景别没用中文名")
+        self.assertIn(u"仰角", seg)
+        self.assertNotIn("medium shot", seg, u"中文块里混进了英文景别")
+
+    def test_relation_and_purpose_are_separated(self):
+        """关系与「要揭示什么」之间不能只隔一个空格。"""
+        h3 = _mod("h3render")
+        plan = TestH3Render()._plan()
+        sh = plan["segments"][0]["shots"][0]
+        sh.update({"angle": "low_angle", "framing": "rule_of_thirds",
+                   "camera_relation": "observes", "purpose": u"露出身后的水面"})
+        text = h3.render_segment(plan, plan["segments"][0], route="mv", lang="zh")
+        seg = text.split(u"内容提示词")[1].split("integrated_multimodal_description")[0]
+        self.assertRegex(seg, u"看着她。露出身后的水面",
+                         u"关系与目的粘在一起了：%s" % seg[:260])
+
+    def test_non_first_segment_is_not_called_the_opening(self):
+        """只有真的第 1 段才叫「全片开头」。第 2 段没接上尾帧时要如实说。"""
+        h3 = _mod("h3render")
+        plan = TestH3Render()._plan()
+        plan["meta"]["lang"] = "zh"
+        plan["meta"]["h3_route"] = "mv"
+        plan["segments"][1]["chain"] = None
+        text = h3.render_segment(plan, plan["segments"][1], route="mv", lang="zh")
+        seg = text.split(u"内容提示词")[1].split("integrated_multimodal_description")[0]
+        self.assertNotIn(u"这是全片开头", seg,
+                         u"第 2 段没接尾帧，却被写成「全片开头」")
+        self.assertIn(u"未接上一帧", seg, u"没如实说明这一段没接上尾帧")
+
+    def test_gates_reject_unknown_angle(self):
+        gates = _mod("gates")
+        plan = TestH3Render()._plan()
+        plan["meta"]["h3_route"] = "mv"
+        plan["segments"][0]["shots"][0]["angle"] = "impossible_angle"
+        res = gates.validate(plan, "")
+        self.assertFalse(res["passed"])
+        self.assertTrue(any(u"角度" in p for p in res["problems"]),
+                        u"野角度没被拦：%s" % res["problems"])
+
+    def test_gates_reject_unknown_framing(self):
+        gates = _mod("gates")
+        plan = TestH3Render()._plan()
+        plan["meta"]["h3_route"] = "mv"
+        plan["segments"][0]["shots"][0]["framing"] = "made_up_composition"
+        res = gates.validate(plan, "")
+        self.assertFalse(res["passed"])
+        self.assertTrue(any(u"构图" in p for p in res["problems"]),
+                        u"野构图没被拦：%s" % res["problems"])
+
+
 # ==================================================================== gates
 class TestGates(unittest.TestCase):
     def _plan(self):
@@ -1555,9 +1858,16 @@ def _fill_plan(plan):
         for sh in s["shots"]:
             if not sh.get("camera"):
                 sh["camera"] = "Static Shot"
+            if not sh.get("camera_relation"):
+                sh["camera_relation"] = (
+                    _mod("camera").default_relation(sh["camera"]) or "observes")
             # 草稿里的 action 是占位符，必须换成真实编排
             sh["action"] = ("she steps through a step-touch and sweeps one arm across "
                             "the %s" % (bg[0] if bg else "frame"))
+            sh["purpose"] = (u"露出她身后的%s" % (bg[0] if bg else u"平面世界")
+                             if isinstance(sh.get("purpose"), str) else sh.get("purpose"))
+            if not sh.get("purpose") or u"草稿" in str(sh.get("purpose")):
+                sh["purpose"] = "reveal the printed world behind her"
     return plan
 
 

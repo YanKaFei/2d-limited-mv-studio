@@ -37,6 +37,10 @@ try:
     import endings as endings_mod
 except Exception:  # pragma: no cover
     endings_mod = None
+try:
+    import camera as camera_mod
+except Exception:  # pragma: no cover
+    camera_mod = None
 
 RENDER_CORE = ["hair", "eyes", "face", "costume", "accessories", "silhouette"]
 
@@ -151,6 +155,13 @@ def check_ready(plan):
             if cam and cam not in CAMERA_SURFACE:
                 problems.append("段 %s 镜头 %s 的运镜 '%s' 不在 MiniMax H3 官方词表里"
                                 % (s.get("label"), sh.get("index"), cam))
+            # 草稿占位符绝不能进提示词 —— 模型会把「（草稿：…）」当成画面要求
+            for fld in ("action", "purpose"):
+                if u"（草稿" in str(sh.get(fld) or ""):
+                    problems.append(
+                        u"段 %s 镜头 %s 的 %s 还是草稿占位符 —— "
+                        u"填成真正的内容再渲染（草稿标记会进提示词）"
+                        % (s.get("label"), sh.get("index"), fld))
     return problems
 
 
@@ -634,6 +645,11 @@ def _mv_content_section(plan, seg, lang, shots):
     """【内容提示词】—— 头一段是「延续上一帧」，然后按镜头写。"""
     ch = _chain_of(seg)
     lines = []
+    segs_all = plan.get("segments") or []
+    is_final_segment = bool(segs_all) and (seg is segs_all[-1])
+    end_txt = ""
+    if is_final_segment and endings_mod is not None:
+        end_txt = endings_mod.ending_block(plan, lang)
     if ch and ch.get("declared"):
         cont = float(ch.get("continue_seconds") or 1.5)
         desc = (ch.get("describe") or "").strip() or u"（上一帧的画面）"
@@ -661,19 +677,25 @@ def _mv_content_section(plan, seg, lang, shots):
                          "structure stay unchanged."
                          % (cont, seg.get("art_movement") or ""))
     elif lang == "zh":
-        lines.append(u"这是全片开头：%s。"
-                     % (seg.get("continuity_from_previous")
-                        or u"建立人物与世界的第一次关系"))
+        if not segs_all or seg is segs_all[0]:
+            lines.append(u"这是全片开头：%s。"
+                         % (seg.get("continuity_from_previous")
+                            or u"建立人物与世界的第一次关系"))
+        else:
+            # 不是第一段，却也没接上尾帧 —— 如实说，不要冒称「开头」
+            lines.append(u"未接上一帧：%s。请尽快用 prism/mvstudio lastframe 取上一段尾帧，"
+                         u"否则这一段会与上一段断开。"
+                         % (seg.get("continuity_from_previous") or u"按同族动作起手"))
     else:
-        lines.append("Opening segment: %s"
-                     % (seg.get("continuity_from_previous")
-                        or "establishes the character"))
-
-    segs_all = plan.get("segments") or []
-    is_final_segment = bool(segs_all) and (seg is segs_all[-1])
-    end_txt = ""
-    if is_final_segment and endings_mod is not None:
-        end_txt = endings_mod.ending_block(plan, lang)
+        if not segs_all or seg is segs_all[0]:
+            lines.append("Opening segment: %s"
+                         % (seg.get("continuity_from_previous")
+                            or "establishes the character"))
+        else:
+            lines.append("Not chained to the previous last frame: %s. Capture the "
+                         "previous tail frame, or this segment will not connect."
+                         % (seg.get("continuity_from_previous")
+                            or "start from the same motion family"))
 
     for i, sh in enumerate(shots, 1):
         t = float(sh.get("start") or 0.0)
@@ -687,30 +709,59 @@ def _mv_content_section(plan, seg, lang, shots):
             typo = (u"歌词「%s」以硬边平面字体印在背景平面上。" % lyric if lang == "zh"
                     else u'The lyric line "%s" is printed on the background plane as '
                          u'hard-edged flat typography.' % lyric)
+        # 运镜分层：景别 / 角度 / 构图 / 焦 / 2D 招 / 相机与主体的关系 / 揭示目的
+        cam_layers, cam_lock = {}, ""
+        if camera_mod is not None:
+            cam_layers = camera_mod.describe_shot(sh, lang)["layers"]
+            if sh.get("camera") == "Static Shot" or not sh.get("camera"):
+                cam_lock = camera_mod.static_lock_line(lang)
         cut = _cut_sentence(sh, i == len(shots), seg)
         if end_txt and i == len(shots):
             # 已经选了收尾效果 —— 它比笼统的 "Final state" 具体得多
             cut = (" " + end_txt) if lang != "zh" else (" " + end_txt)
+        size_cn = None
+        if camera_mod is not None and sh.get("shot_size_id"):
+            _it = camera_mod.shot_size(sh["shot_size_id"])
+            if _it:
+                size_cn = _it.get("name_cn")
+        size_disp = (size_cn or size) if lang == "zh" else size
         if lang == "zh":
-            head = (u"[Shot %d] %.1fs–%.1fs，%s。" % (i, t, float(sh.get("end") or 0), size)
-                    if i > 1 else u"[Shot 1] %s。" % size)
+            head = (u"[Shot %d] %.1fs–%.1fs，%s。" % (i, t, float(sh.get("end") or 0), size_disp)
+                    if i > 1 else u"[Shot 1] %s。" % size_disp)
             bg = (u"背景是平面的，由这段歌词里的实物构成：%s。" % u"、".join(els)
                   if els else u"")
             # 中文块里嵌的英文句子要大写开头，且句与句之间要留空格，
             # 否则会出现「…next.[Shot 2]」这种粘在一起的排版
             act = _cap(action) if action else u""
+            # 具名取层：缺哪层就跳过，不会错位。景别已在 head 里，不重复。
+            mid = [cam_layers.get(k) for k in ("angle", "focus", "framing", "move_2d")]
+            mid = [x for x in mid if x]
+            layers = (u"，".join(mid) + u"。") if mid else u""
+            tail_bits = [x for x in (cam_layers.get("relation"),
+                                     cam_layers.get("purpose")) if x]
+            tail = (u"。".join(tail_bits) + u"。") if tail_bits else u""
+            if cam_lock:
+                tail = (tail + cam_lock) if tail else cam_lock
             lines.append(u" ".join(x for x in [
-                head, (act + u"。") if act else u"", bg, typo,
-                _camera_sentence_zh(sh) + cut] if x))
+                head, layers, (act + u"。") if act else u"", bg, typo,
+                _camera_sentence_zh(sh), tail, cut] if x))
         else:
             head = ("[Shot %d] At %02d:%06.3f, the camera cuts to a %s. "
                     % (i, int(t // 60), t % 60, size) if i > 1
                     else "[Shot 1] A %s frames her. " % size)
             bg = ("Behind her the flat background is built out of the lyric's own "
                   "objects: %s. " % ", ".join(els)) if els else ""
+            mid_en = [cam_layers.get(k) for k in ("angle", "focus", "framing", "move_2d")]
+            mid_en = [x for x in mid_en if x]
+            layers_en = (", ".join(mid_en) + ".") if mid_en else ""
+            tail_en_bits = [x for x in (cam_layers.get("relation"),
+                                        cam_layers.get("purpose")) if x]
+            tail_en = (". ".join(tail_en_bits) + ".") if tail_en_bits else ""
+            if cam_lock:
+                tail_en = (tail_en + " " + cam_lock) if tail_en else cam_lock
             lines.append(" ".join(x for x in [
-                head, _sentence(action), bg, typo,
-                _camera_sentence(sh), cut.strip()] if x))
+                head, layers_en, _sentence(action), bg, typo,
+                _camera_sentence(sh), tail_en, cut.strip()] if x))
     if seg.get("is_tail_pad"):
         lines.append(u"音乐在本段中途结束，之后没有声音：只用 hold frame、视觉衰减、"
                      u"慢速动画、纸张质感、最后一张定格赛璐璐补足；"

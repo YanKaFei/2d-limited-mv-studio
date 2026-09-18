@@ -27,6 +27,10 @@ try:
     import chain as chain_mod
 except Exception:  # pragma: no cover
     chain_mod = None
+try:
+    import camera as camera_mod
+except Exception:  # pragma: no cover
+    camera_mod = None
 
 RENDER_CORE = ["hair", "eyes", "face", "costume", "accessories", "silhouette"]
 
@@ -332,6 +336,16 @@ def validate(plan, prompts_text="", strict=False):
                         u"content_prompt / action）必须用**目标语言**写；"
                         u"只有逐字引用的歌词与背景实物名保留原语言"
                         % (i, runs[0][:12]))
+
+    # ---------------------------------------------------------- 运镜分层
+    if camera_mod is not None:
+        for s in segments:
+            label = s.get("label") or ("#%s" % s.get("id"))
+            for sh in (s.get("shots") or []):
+                for prob in camera_mod.validate_shot(sh):
+                    problems.append(u"D 格式：段 %s %s" % (label, prob))
+            for prob in camera_mod.check_camera_budget(s):
+                problems.append(u"D 格式：%s" % prob)
 
     # ---------------------------------------------------------- 收尾效果
     # 只在 mv 路线强制：其它路线是格式保真用途，不强制创作决策

@@ -20,9 +20,53 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import common  # noqa: E402
 import beats as beats_mod  # noqa: E402
+try:
+    import camera as camera_mod
+except Exception:  # pragma: no cover
+    camera_mod = None
 
+# 景别优先从 camera-library 的 shot_sizes 取（10 个有出处的景别）；
+# 库不可用时退回这一份等价的英文写法。
 SHOT_SIZES = ["medium shot", "close-up", "wide shot", "medium close-up",
               "full shot", "extreme close-up"]
+
+
+def _shot_size_id(i):
+    """按轮换挑景别 id（单人 MV 可用集合）。"""
+    if camera_mod is None:
+        return None
+    ids = [s["id"] for s in camera_mod.shot_sizes(solo_only=True)]
+    if not ids:
+        return None
+    # 人物动作的主场占多数：中景系优先
+    rotation = [x for x in ("medium_shot", "medium_long_shot", "close_up",
+                            "full_shot", "medium_close_up", "wide_shot",
+                            "extreme_close_up", "insert_shot",
+                            "extreme_wide_shot") if x in ids] or ids
+    return rotation[i % len(rotation)]
+
+
+def _enforce_camera_cap(shots):
+    """运镜丰富 ≠ 运镜展览：运动镜头 ≤ ceil(n/2)，其余压回固定镜头。
+
+    这是用户定的红线，也是保住 limited animation 手感的关键。
+    """
+    n = len(shots)
+    if n == 0:
+        return shots
+    cap = -(-n // 2)
+    moving = [i for i, s in enumerate(shots) if s.get("camera") != "Static Shot"]
+    if len(moving) <= cap:
+        return shots
+    # 从后往前压回，保留开头的运动镜头（开场那一下最有效）
+    for i in reversed(moving[cap:]):
+        s = shots[i]
+        s["camera"] = "Static Shot"
+        s["camera_amplitude"] = ""
+        s["camera_speed"] = ""
+        if camera_mod is not None:
+            s["camera_relation"] = camera_mod.default_relation("Static Shot")
+    return shots
 
 # 允许的 2D 运镜（官方词表里挑出来不会破坏平面感的）
 DEFAULT_CAMERAS = ["Static Shot", "Push In", "Pan Right", "Pull Out", "Pan Left",
@@ -103,7 +147,10 @@ def build_shots(seg, grid, cameras, shot_size_seed=0, min_shots=2, max_shots=4):
             "with large amplitude" if (i % 2 == 1) else "with small amplitude")
         speed = "" if cam == "Static Shot" else (
             "at fast speed" if (i % 2 == 1) else "at slow speed")
-        shots.append({
+        size_id = _shot_size_id(shot_size_seed + i)
+        size_en = SHOT_SIZES[(shot_size_seed + i) % len(SHOT_SIZES)]
+        energy = seg.get("energy")
+        shot = {
             "index": i + 1,
             "start": round(s0 - start, 6),
             "end": round(s1 - start, 6),
@@ -115,12 +162,34 @@ def build_shots(seg, grid, cameras, shot_size_seed=0, min_shots=2, max_shots=4):
             "camera_amplitude": amp,
             "camera_speed": speed,
             "camera_target": "",
-            "shot_size": SHOT_SIZES[(shot_size_seed + i) % len(SHOT_SIZES)],
+            "shot_size": size_en,
             "action": _draft(u"这一镜身体具体怎么动（必须绑定本段歌词，"
                              u"并把重拍落在动作的 accent 上）"),
             "cut": "hard cut" if i < len(bounds) - 2 else "none",
             "lyric": "",
-        })
+        }
+        if camera_mod is not None:
+            shot["shot_size_id"] = size_id
+            shot["angle"] = camera_mod.pick_angle(i, energy=energy)
+            shot["framing"] = camera_mod.pick_composition(i)
+            shot["focus"] = camera_mod.pick_focus(size_id, energy=energy)
+            shot["camera_relation"] = camera_mod.default_relation(cam)
+            shot["purpose"] = _draft(u"这一下要揭示什么（答不出就删掉这个切）")
+            shot["move_2d"] = None
+        shots.append(shot)
+
+    if camera_mod is not None:
+        shots = _enforce_camera_cap(shots)
+        # 2D 专属招加在**机位不动**的镜头上：机位锁死，画面仍在动 ——
+        # 这正是 limited animation 的手感来源，而且完全不破坏平面感。
+        flat_ids = [m["id"] for m in camera_mod.moves_2d()
+                    if m["id"] not in ("paper_wipe", "split_screen")]
+        # 用段号做偏移：否则每一段的「第一招」都是同一个，等于没有变化
+        k = shot_size_seed
+        for sh in shots:
+            if sh.get("camera") == "Static Shot" and flat_ids:
+                sh["move_2d"] = flat_ids[k % len(flat_ids)]
+                k += 1
     return shots
 
 
@@ -361,22 +430,34 @@ def render_worksheet(plan):
         lines.append(u"- [ ] `hook_to_next` / `continuity_from_previous`："
                      u"整条要连成**一支持续的舞**")
         lines.append("")
-        lines.append(u"| 镜 | 本地时间 | 拍 | 景别 | 运镜（官方词） | 幅度 | 速度 | 切 |")
-        lines.append(u"|----|---------|----|------|---------------|------|------|-----|")
+        lines.append(u"| 镜 | 本地时间 | 拍 | 景别 | 角度 | 构图 | 焦 | "
+                     u"2D 招 | 运镜（官方词） | 速度 | 关系 | 切 |")
+        lines.append(u"|----|---------|----|------|------|------|----|"
+                     u"-------|---------------|------|------|-----|")
         for sh in s.get("shots") or []:
-            lines.append(u"| %d | %.3f–%.3f | %s→%s | %s | `%s` | %s | %s | %s |"
+            lines.append(u"| %d | %.3f–%.3f | %s→%s | %s | %s | %s | %s | %s | `%s` | %s | %s | %s |"
                          % (sh.get("index"), sh.get("start"), sh.get("end"),
                             sh.get("beat_start"), sh.get("beat_end"),
-                            sh.get("shot_size"), sh.get("camera"),
-                            sh.get("camera_amplitude") or u"—",
-                            sh.get("camera_speed") or u"—", sh.get("cut")))
+                            sh.get("shot_size_id") or sh.get("shot_size"),
+                            sh.get("angle") or u"—", sh.get("framing") or u"—",
+                            sh.get("focus") or u"—", sh.get("move_2d") or u"—",
+                            sh.get("camera"),
+                            sh.get("camera_speed") or u"—",
+                            sh.get("camera_relation") or u"—", sh.get("cut")))
+        lines.append("")
+        lines.append(u"> 运镜按**六层**来：景别 / 角度 / 构图 / 焦 / 2D 招 / 官方运动词 + 关系。"
+                     u"完整词表见 `references/camera-vocabulary.md`，"
+                     u"或用 `python3 scripts/mvstudio.py camera --md` 打印。")
         lines.append("")
         lines.append(u"**这一镜身体具体怎么动**（逐镜填 `action`）：")
         lines.append("")
         for sh in s.get("shots") or []:
-            lines.append(u"- [ ] 镜头 %d（%s–%.3fs）：%s"
-                         % (sh.get("index"), sh.get("camera"), sh.get("end"),
+            lines.append(u"- [ ] 镜头 %d（%s / %s → %s）：%s"
+                         % (sh.get("index"), sh.get("angle") or u"—",
+                            sh.get("camera"), sh.get("end"),
                             sh.get("action") or u"**待填**"))
+            lines.append(u"      - [ ] 这一下**要揭示什么**（`purpose`）：%s"
+                         % (sh.get("purpose") or u"**待填**"))
         lines.append("")
     return "\n".join(lines) + "\n"
 

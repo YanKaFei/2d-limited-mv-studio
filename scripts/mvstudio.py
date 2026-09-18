@@ -27,6 +27,7 @@ sys.path.insert(0, os.path.join(HERE, "lib"))
 import common  # noqa: E402
 import audioprobe  # noqa: E402
 import beats as beats_mod  # noqa: E402
+import camera as camera_mod  # noqa: E402
 import canon as canon_mod  # noqa: E402
 import chain as chain_mod  # noqa: E402
 import confirm as confirm_mod  # noqa: E402
@@ -604,6 +605,11 @@ def step_confirm(args):
     return confirm_mod.main(argv) or 0
 
 
+def step_camera(args):
+    argv = _passthrough(args, ["--map"])
+    return camera_mod.main(argv) or 0
+
+
 def step_endings(args):
     argv = _passthrough(args, ["--pick", "--plan"])
     if getattr(args, "list_only", False):
@@ -893,6 +899,11 @@ def build_parser():
     p.add_argument("--revoke", default=None)
     p.add_argument("--plan", default=None)
     p.set_defaults(func=step_confirm)
+
+    p = sub.add_parser("camera", help=u"运镜分层库（景别/角度/构图/焦/2D 招）")
+    common.add_common_args(p)
+    p.add_argument("--map", default=None, help=u"查一个实拍术语的官方映射")
+    p.set_defaults(func=step_camera)
 
     p = sub.add_parser("endings", help=u"收尾效果菜单（不一定要站定）")
     common.add_common_args(p)
