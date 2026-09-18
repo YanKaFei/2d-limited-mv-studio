@@ -1,0 +1,663 @@
+{
+  "meta": {
+    "name": "运镜库",
+    "version": "0.1.0",
+    "source": "骨架取自 MiniMax H3 官方运镜词表；风格兼容性取自 art-aesthetic-vault 各流派卡的『五、AI 视频层』",
+    "rule": "写进提示词时，必须用 official_terms 里的官方词，不能只写中文描述。复合运镜要写明两个词『同时进行』。",
+    "families": [
+      "固定",
+      "推拉",
+      "摇移",
+      "升降",
+      "环绕",
+      "翻滚",
+      "手持",
+      "复合"
+    ]
+  },
+  "cameras": [
+    {
+      "id": "static",
+      "name_cn": "固定镜头",
+      "official_terms": [
+        "Static Shot"
+      ],
+      "family": "固定",
+      "speed": "无",
+      "mood": [
+        "安静",
+        "庄重",
+        "冷感",
+        "凝视"
+      ],
+      "note": "全片最省也最容易被忽略的一档。该不动的时候不动，比乱运镜高级。",
+      "beat_use": "不需要卡点，整镜保持",
+      "forbidden_for_styles": []
+    },
+    {
+      "id": "push_in",
+      "name_cn": "机位推进",
+      "official_terms": [
+        "Push In"
+      ],
+      "family": "推拉",
+      "speed": "慢",
+      "mood": [
+        "凝聚",
+        "揭示",
+        "不安",
+        "专注"
+      ],
+      "note": "推到底要推到什么，开拍前就要想好——推到脸和推到空处是两回事。",
+      "beat_use": "起点踩重拍，终点落在下一句开头",
+      "forbidden_for_styles": [
+        "pixel-art"
+      ]
+    },
+    {
+      "id": "pull_out",
+      "name_cn": "机位拉远",
+      "official_terms": [
+        "Pull Out"
+      ],
+      "family": "推拉",
+      "speed": "慢",
+      "mood": [
+        "收束",
+        "告别",
+        "世界变大",
+        "孤独"
+      ],
+      "note": "收尾常用。拉远时画面里必须有东西可看，否则是空转。",
+      "beat_use": "最后两小节启动，收在终止拍",
+      "forbidden_for_styles": []
+    },
+    {
+      "id": "zoom_in",
+      "name_cn": "变焦推近",
+      "official_terms": [
+        "Zoom In"
+      ],
+      "family": "推拉",
+      "speed": "中",
+      "mood": [
+        "紧张",
+        "聚焦",
+        "眩晕"
+      ],
+      "note": "变焦和推机位不是一回事：变焦压缩空间，推机位改变透视关系。别混用。",
+      "beat_use": "可踩拍推进，每次进一格",
+      "forbidden_for_styles": [
+        "pixel-art",
+        "op-art"
+      ]
+    },
+    {
+      "id": "zoom_out",
+      "name_cn": "变焦拉远",
+      "official_terms": [
+        "Zoom Out"
+      ],
+      "family": "推拉",
+      "speed": "中",
+      "mood": [
+        "揭示全貌",
+        "抽离"
+      ],
+      "note": "青绿山水的『缓慢 zoom out 揭示全貌』是库里的推荐用法。",
+      "beat_use": "落在段落收尾",
+      "forbidden_for_styles": [
+        "pixel-art"
+      ]
+    },
+    {
+      "id": "pan",
+      "name_cn": "横摇",
+      "official_terms": [
+        "Pan Left",
+        "Pan Right"
+      ],
+      "family": "摇移",
+      "speed": "慢",
+      "mood": [
+        "巡视",
+        "展开",
+        "抒情"
+      ],
+      "note": "摇的是机位朝向，不是机位位置。和 Truck 不要写混。",
+      "beat_use": "整段匀速，不卡拍",
+      "forbidden_for_styles": [
+        "pixel-art"
+      ]
+    },
+    {
+      "id": "pan_pixel",
+      "name_cn": "像素对齐平移",
+      "official_terms": [
+        "Pan"
+      ],
+      "family": "摇移",
+      "speed": "慢",
+      "mood": [
+        "怀旧",
+        "卡顿"
+      ],
+      "note": "像素画风专用：平移必须整像素对齐、运动卡顿，绝不平滑。写 Pan 并注明整像素对齐。",
+      "beat_use": "整段匀速",
+      "forbidden_for_styles": []
+    },
+    {
+      "id": "truck",
+      "name_cn": "平行横移",
+      "official_terms": [
+        "Truck Left",
+        "Truck Right"
+      ],
+      "family": "摇移",
+      "speed": "慢",
+      "mood": [
+        "展开长卷",
+        "游观",
+        "陪伴"
+      ],
+      "note": "中国山水的『游观』靠它——镜头代表观者的眼睛在画里移动。",
+      "beat_use": "跟着景物节奏，不卡拍",
+      "forbidden_for_styles": [
+        "pixel-art"
+      ]
+    },
+    {
+      "id": "tilt",
+      "name_cn": "俯仰",
+      "official_terms": [
+        "Tilt Up",
+        "Tilt Down"
+      ],
+      "family": "摇移",
+      "speed": "中",
+      "mood": [
+        "仰视",
+        "升起",
+        "惊叹"
+      ],
+      "note": "常和 Pedestal 搭配做『升起』的感觉；单独用容易显得随意。",
+      "beat_use": "起点或终点踩重拍",
+      "forbidden_for_styles": []
+    },
+    {
+      "id": "pedestal_up",
+      "name_cn": "摇臂上升",
+      "official_terms": [
+        "Pedestal Up"
+      ],
+      "family": "升降",
+      "speed": "慢",
+      "mood": [
+        "揭幕",
+        "庄严",
+        "升起",
+        "仪式感"
+      ],
+      "note": "用户点名要的『摇臂』。影视感最强的一档，用在开场和收尾最值。",
+      "beat_use": "用 4–8 拍上升到位",
+      "forbidden_for_styles": [
+        "pixel-art"
+      ]
+    },
+    {
+      "id": "pedestal_down",
+      "name_cn": "摇臂下降",
+      "official_terms": [
+        "Pedestal Down"
+      ],
+      "family": "升降",
+      "speed": "慢",
+      "mood": [
+        "沉落",
+        "贴近",
+        "进入"
+      ],
+      "note": "降到与人物视线齐平时停住，是最自然的一次『进入她的世界』。",
+      "beat_use": "落在人物开口前一拍",
+      "forbidden_for_styles": [
+        "pixel-art"
+      ]
+    },
+    {
+      "id": "arc",
+      "name_cn": "环绕",
+      "official_terms": [
+        "Arc Shot"
+      ],
+      "family": "环绕",
+      "speed": "慢",
+      "mood": [
+        "展示",
+        "亲密",
+        "眩晕",
+        "华丽"
+      ],
+      "note": "环绕一整圈会拖节奏，通常只走 90°–180°。",
+      "beat_use": "转过的角度和拍数成整比（半圈 = 8 拍等单位）",
+      "forbidden_for_styles": [
+        "pop-art",
+        "superflat",
+        "art-nouveau",
+        "pixel-art"
+      ]
+    },
+    {
+      "id": "tracking",
+      "name_cn": "跟拍",
+      "official_terms": [
+        "Tracking Shot"
+      ],
+      "family": "环绕",
+      "speed": "中",
+      "mood": [
+        "陪伴",
+        "跟随",
+        "行进"
+      ],
+      "note": "跟拍时人物在画面里的位置要固定，动的是背景——否则观众会晕。",
+      "beat_use": "跟着动作起伏，不强行卡拍",
+      "forbidden_for_styles": [
+        "pixel-art"
+      ]
+    },
+    {
+      "id": "roll",
+      "name_cn": "翻滚",
+      "official_terms": [
+        "Roll Clockwise",
+        "Roll Counterclockwise"
+      ],
+      "family": "翻滚",
+      "speed": "中",
+      "mood": [
+        "失衡",
+        "旋转",
+        "梦幻",
+        "眩晕"
+      ],
+      "note": "翻滚角度小一点（≤15°）是风格，大了就是事故。",
+      "beat_use": "每次倾斜踩一个重拍",
+      "forbidden_for_styles": [
+        "pixel-art",
+        "op-art"
+      ]
+    },
+    {
+      "id": "shake",
+      "name_cn": "轻微抖动／手持感",
+      "official_terms": [
+        "Shake Slightly",
+        "Shake Strongly"
+      ],
+      "family": "手持",
+      "speed": "慢",
+      "mood": [
+        "生活感",
+        "亲密",
+        "不安"
+      ],
+      "note": "『极轻微的缓慢手持晃动』是田园风卡片里的推荐写法；重的抖动不要用。",
+      "beat_use": "不卡拍",
+      "forbidden_for_styles": [
+        "pixel-art",
+        "op-art"
+      ]
+    },
+    {
+      "id": "pov",
+      "name_cn": "主观视角",
+      "official_terms": [
+        "POV"
+      ],
+      "family": "固定",
+      "speed": "中",
+      "mood": [
+        "代入",
+        "第一人称"
+      ],
+      "note": "MV 里慎用——看不到舞者本人的镜头，在舞蹈片里是浪费。",
+      "beat_use": "—",
+      "forbidden_for_styles": []
+    },
+    {
+      "id": "spiral",
+      "name_cn": "螺旋",
+      "official_terms": [
+        "Arc Shot",
+        "Push In"
+      ],
+      "family": "复合",
+      "speed": "慢",
+      "mood": [
+        "吞噬",
+        "沉沦",
+        "高潮",
+        "眩晕"
+      ],
+      "note": "★用户点名要的。写法必须是『一边环绕一边推近（Arc Shot 与 Push In 同时进行），形成螺旋』——只写『环绕推近』模型读不准。全片最多 2–3 次，用多了不值钱。",
+      "beat_use": "整段匀速，最后 1 拍到位",
+      "forbidden_for_styles": [
+        "pixel-art",
+        "pop-art",
+        "superflat"
+      ]
+    },
+    {
+      "id": "crane_reveal",
+      "name_cn": "摇臂揭示",
+      "official_terms": [
+        "Pedestal",
+        "Pull Out"
+      ],
+      "family": "复合",
+      "speed": "慢",
+      "mood": [
+        "收束",
+        "世界变大",
+        "告别"
+      ],
+      "note": "升起 + 拉远＝先看见她、再看见整个世界。收尾专用。",
+      "beat_use": "最后 2 小节启动",
+      "forbidden_for_styles": [
+        "pixel-art"
+      ]
+    },
+    {
+      "id": "whip_pan",
+      "name_cn": "甩镜",
+      "official_terms": [
+        "Pan"
+      ],
+      "family": "复合",
+      "speed": "快",
+      "mood": [
+        "切场",
+        "亢奋",
+        "打断"
+      ],
+      "note": "★换画风最省力的转场：甩镜过程中的运动模糊正好用来藏接缝。写法要注明『快速』。",
+      "beat_use": "甩的过程占 1 拍，出口踩重拍",
+      "forbidden_for_styles": [
+        "pixel-art"
+      ]
+    },
+    {
+      "id": "orbit_rise",
+      "name_cn": "环绕上升",
+      "official_terms": [
+        "Arc Shot",
+        "Pedestal"
+      ],
+      "family": "复合",
+      "speed": "慢",
+      "mood": [
+        "揭幕",
+        "华丽",
+        "升格感"
+      ],
+      "note": "摇臂和环绕同时进行。用在变身、加冕、亮相这类时刻。",
+      "beat_use": "4–8 拍完成",
+      "forbidden_for_styles": [
+        "pixel-art",
+        "pop-art"
+      ]
+    },
+    {
+      "id": "dolly_zoom",
+      "name_cn": "希区柯克变焦",
+      "official_terms": [
+        "Zoom",
+        "Truck"
+      ],
+      "family": "复合",
+      "speed": "中",
+      "mood": [
+        "心理冲击",
+        "失衡",
+        "顿悟"
+      ],
+      "note": "变焦和机位反向移动，背景透视被拉扯。官方示例里出现过，但很挑画面，MV 里用一次就够。",
+      "beat_use": "一次完成，落在重拍",
+      "forbidden_for_styles": [
+        "pixel-art",
+        "op-art",
+        "superflat"
+      ]
+    },
+    {
+      "id": "orbit_turntable",
+      "name_cn": "转台式环绕",
+      "official_terms": [
+        "Arc Shot"
+      ],
+      "family": "环绕",
+      "speed": "中",
+      "mood": [
+        "展示",
+        "产品感",
+        "光亮机械"
+      ],
+      "note": "Y2K 卡片的推荐用法：像在转台上展示产品。要做得光亮而机械，不要自然手持感。",
+      "beat_use": "匀速，不卡拍",
+      "forbidden_for_styles": [
+        "pixel-art"
+      ]
+    },
+    {
+      "id": "slow_drift",
+      "name_cn": "极缓漂移",
+      "official_terms": [
+        "Push In",
+        "Pull Out"
+      ],
+      "family": "推拉",
+      "speed": "极慢",
+      "mood": [
+        "呼吸",
+        "静止中的变化",
+        "装饰生长"
+      ],
+      "note": "给『几乎静止』的画风用（超扁平、新艺术、琳派）：镜头几乎不动，全靠画面内部变化推进。",
+      "beat_use": "整段不卡拍",
+      "forbidden_for_styles": []
+    },
+    {
+      "id": "cut_pace",
+      "name_cn": "跳切（靠剪辑而非运镜）",
+      "official_terms": [
+        "Static Shot"
+      ],
+      "family": "固定",
+      "speed": "快",
+      "mood": [
+        "活泼",
+        "吵",
+        "亢奋"
+      ],
+      "note": "孟菲斯卡片的推荐用法：镜头固定，节奏完全来自动作和剪辑。所以『不运镜』本身也是一种运镜。",
+      "beat_use": "每次切踩重拍",
+      "forbidden_for_styles": []
+    }
+  ],
+  "style_camera_map": {
+    "_source": "art-aesthetic-vault 各流派卡的『五、AI 视频层 › 运镜』字段，逐条抄自库内数据",
+    "pixel-art": {
+      "prefer": [
+        "pan_pixel"
+      ],
+      "avoid": [
+        "push_in",
+        "zoom_in",
+        "zoom_out",
+        "arc",
+        "roll",
+        "shake"
+      ]
+    },
+    "anime-cel": {
+      "prefer": [
+        "pan",
+        "push_in",
+        "tracking",
+        "arc"
+      ],
+      "avoid": []
+    },
+    "rimpa": {
+      "prefer": [
+        "pan",
+        "truck",
+        "static",
+        "slow_drift"
+      ],
+      "avoid": [
+        "push_in",
+        "arc",
+        "roll",
+        "shake"
+      ]
+    },
+    "rococo": {
+      "prefer": [
+        "pan",
+        "arc"
+      ],
+      "avoid": [
+        "shake"
+      ]
+    },
+    "pop-art": {
+      "prefer": [
+        "static",
+        "cut_pace"
+      ],
+      "avoid": [
+        "push_in",
+        "arc",
+        "roll",
+        "spiral",
+        "dolly_zoom"
+      ]
+    },
+    "kitsch": {
+      "prefer": [
+        "arc",
+        "orbit_turntable"
+      ],
+      "avoid": []
+    },
+    "art-nouveau": {
+      "prefer": [
+        "static",
+        "slow_drift"
+      ],
+      "avoid": [
+        "arc",
+        "roll",
+        "shake"
+      ]
+    },
+    "superflat": {
+      "prefer": [
+        "static",
+        "slow_drift"
+      ],
+      "avoid": [
+        "arc",
+        "spiral",
+        "dolly_zoom"
+      ]
+    },
+    "minhwa": {
+      "prefer": [
+        "static",
+        "pan",
+        "truck"
+      ],
+      "avoid": [
+        "push_in",
+        "arc",
+        "shake"
+      ]
+    },
+    "naive-art": {
+      "prefer": [
+        "static",
+        "pan",
+        "truck"
+      ],
+      "avoid": [
+        "arc",
+        "roll"
+      ]
+    },
+    "op-art": {
+      "prefer": [
+        "push_in",
+        "pan",
+        "static"
+      ],
+      "avoid": [
+        "roll",
+        "shake",
+        "zoom_in",
+        "dolly_zoom"
+      ]
+    },
+    "memphis-design": {
+      "prefer": [
+        "static",
+        "cut_pace"
+      ],
+      "avoid": [
+        "slow_drift"
+      ]
+    },
+    "y2k": {
+      "prefer": [
+        "orbit_turntable",
+        "tilt"
+      ],
+      "avoid": []
+    },
+    "shin-hanga": {
+      "prefer": [
+        "static",
+        "pan"
+      ],
+      "avoid": [
+        "arc",
+        "roll",
+        "shake",
+        "push_in"
+      ]
+    },
+    "blue-green-landscape": {
+      "prefer": [
+        "truck",
+        "zoom_out",
+        "pan"
+      ],
+      "avoid": [
+        "arc",
+        "roll"
+      ]
+    },
+    "cottagecore": {
+      "prefer": [
+        "static",
+        "shake"
+      ],
+      "avoid": [
+        "arc",
+        "roll",
+        "dolly_zoom"
+      ]
+    }
+  }
+}

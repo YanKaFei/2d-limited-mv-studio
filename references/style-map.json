@@ -1,0 +1,289 @@
+{
+  "meta": {
+    "name": "风格库意象索引",
+    "version": "0.1.0",
+    "purpose": "把歌词里的意象词映射到 art-aesthetic-vault 的流派 slug。本文件【只做索引】，不复制风格库内容；真正的七层提示词、配色、负向词一律从风格库现取。",
+    "how_to_use": "python3 ~/Desktop/art-aesthetic-vault/.repo/artvault.py --json compose --style <slug> --subject '<主体>'",
+    "honesty": "意象→流派的对应是【审美判断】，不是可计算的结论。所以它只是【建议】，plan.json 必须允许人工改写。",
+    "confidence": {
+      "high": "流派与意象有强对应（如水→琳派）",
+      "medium": "合理但有别的选择",
+      "low": "只是其中一种可能"
+    },
+    "removed_project_specific_block": "这里原本放某个具体项目的人工定稿（逐段画风映射）。已移除——那是项目私有内容。公开版本只保留通用的意象→流派索引；你自己的定稿请写在 workspace/ 里，不要提交到仓库。",
+    "scope": "本文件只包含**通用**的意象→流派索引。针对具体项目的人工定稿请写在 workspace/ 里，不要提交到仓库。"
+  },
+  "entries": [
+    {
+      "image": [
+        "池塘",
+        "水",
+        "水面",
+        "波纹",
+        "荷花",
+        "荷叶"
+      ],
+      "slug": "rimpa",
+      "confidence": "high",
+      "reason": "琳派＝金箔＋水流纹＋四季草花；金鱼/水纹是它的招牌语汇"
+    },
+    {
+      "image": [
+        "夕阳",
+        "黄昏",
+        "暮色",
+        "日落",
+        "傍晚",
+        "蓝色"
+      ],
+      "slug": "shin-hanga",
+      "confidence": "high",
+      "reason": "新版画＝渐变＋氛围光，暮蓝/月紫是它的固定调色板；『蓝色的夕阳』几乎是写给它的"
+    },
+    {
+      "image": [
+        "东方",
+        "远山",
+        "群山",
+        "山河",
+        "青绿",
+        "山川"
+      ],
+      "slug": "blue-green-landscape",
+      "confidence": "high",
+      "reason": "青绿山水＝石青石绿矿物颜料＋金线勾边"
+    },
+    {
+      "image": [
+        "春天",
+        "夏天",
+        "秋天",
+        "冬天",
+        "四季",
+        "季节",
+        "草花"
+      ],
+      "slug": "rimpa",
+      "confidence": "high",
+      "reason": "琳派的屏风本来就画四季草花（尾形光琳《燕子花图》）"
+    },
+    {
+      "image": [
+        "小朋友",
+        "儿歌",
+        "童年",
+        "幼稚",
+        "天真",
+        "小伙伴"
+      ],
+      "slug": "naive-art",
+      "confidence": "high",
+      "reason": "稚拙艺术＝自学画者、故意画错的透视，是最『儿童画』的画派"
+    },
+    {
+      "image": [
+        "伙伴",
+        "陪伴",
+        "家",
+        "小屋",
+        "温暖",
+        "日常",
+        "治愈"
+      ],
+      "slug": "cottagecore",
+      "confidence": "high",
+      "reason": "田园风＝亚麻、藤编、粗陶、野花，『陪伴』的质感"
+    },
+    {
+      "image": [
+        "王子",
+        "公主",
+        "宫殿",
+        "贵族",
+        "舞会",
+        "礼服"
+      ],
+      "slug": "rococo",
+      "confidence": "high",
+      "reason": "洛可可的 fête galante 就是贵族在花园里嬉游"
+    },
+    {
+      "image": [
+        "醒来",
+        "唤醒",
+        "祈祷",
+        "仪式",
+        "光",
+        "圣洁"
+      ],
+      "slug": "art-nouveau",
+      "confidence": "high",
+      "reason": "新艺术的中央人物被装饰性拱形光环框住，天然是『仪式』的构图"
+    },
+    {
+      "image": [
+        "漫画",
+        "分格",
+        "网点",
+        "特写",
+        "酷",
+        "眼神"
+      ],
+      "slug": "pop-art",
+      "confidence": "medium",
+      "reason": "波普＝漫画与广告搬进美术馆，自带分格和网点"
+    },
+    {
+      "image": [
+        "可爱",
+        "贴纸",
+        "闪亮",
+        "甜美",
+        "选美"
+      ],
+      "slug": "kitsch",
+      "confidence": "medium",
+      "reason": "媚俗＝刻意的甜腻，甜到过头反而成了武器"
+    },
+    {
+      "image": [
+        "花纹",
+        "图案",
+        "满屏",
+        "壁纸",
+        "重复"
+      ],
+      "slug": "superflat",
+      "confidence": "high",
+      "reason": "超扁平＝全幅重复图案，人物与图案无层级"
+    },
+    {
+      "image": [
+        "游戏",
+        "像素",
+        "8位",
+        "16位",
+        "载入"
+      ],
+      "slug": "pixel-art",
+      "confidence": "high",
+      "reason": "像素艺术＝限定调色板＋硬色阶＋精灵图"
+    },
+    {
+      "image": [
+        "动画",
+        "日常",
+        "主世界"
+      ],
+      "slug": "anime-cel",
+      "confidence": "high",
+      "reason": "赛璐璐＝日式动画的通用语法，适合做『主世界』"
+    },
+    {
+      "image": [
+        "传统",
+        "民俗",
+        "吉祥",
+        "憨",
+        "老虎",
+        "喜鹊"
+      ],
+      "slug": "minhwa",
+      "confidence": "high",
+      "reason": "韩国民画＝老虎画得像狗，天真得可爱"
+    },
+    {
+      "image": [
+        "眩晕",
+        "转盘",
+        "错觉",
+        "催眠",
+        "黑白"
+      ],
+      "slug": "op-art",
+      "confidence": "medium",
+      "reason": "欧普＝同心圆与摩尔纹，纯黑白高对比"
+    },
+    {
+      "image": [
+        "1980",
+        "复古",
+        "波点",
+        "几何",
+        "蹦迪"
+      ],
+      "slug": "memphis-design",
+      "confidence": "high",
+      "reason": "孟菲斯＝80 年代后现代撞色几何"
+    },
+    {
+      "image": [
+        "未来",
+        "数码",
+        "千禧",
+        "全息",
+        "塑料",
+        "科技"
+      ],
+      "slug": "y2k",
+      "confidence": "high",
+      "reason": "Y2K＝透明塑料、铬、全息虹彩"
+    },
+    {
+      "image": [
+        "怀旧",
+        "老动画",
+        "胶片",
+        "赛博",
+        "都市"
+      ],
+      "slug": "retro-anime",
+      "confidence": "medium",
+      "reason": "90 年代复古动画＝胶片颗粒＋复古色偏"
+    },
+    {
+      "image": [
+        "水墨",
+        "禅",
+        "留白",
+        "静"
+      ],
+      "slug": "zen-art",
+      "confidence": "medium",
+      "reason": "禅艺术＝极少笔触，留白即内容"
+    },
+    {
+      "image": [
+        "花鸟",
+        "工笔",
+        "精细",
+        "宫廷"
+      ],
+      "slug": "gongbi",
+      "confidence": "high",
+      "reason": "工笔重彩＝细线勾勒＋层层设色，花鸟的典型"
+    },
+    {
+      "image": [
+        "梦幻",
+        "超现实",
+        "变形",
+        "魔法"
+      ],
+      "slug": "surrealism",
+      "confidence": "medium",
+      "reason": "超现实主义处理变形与梦境"
+    },
+    {
+      "image": [
+        "光",
+        "发光",
+        "神圣",
+        "空灵"
+      ],
+      "slug": "luminism",
+      "confidence": "medium",
+      "reason": "发光主义＝对光的专注，水与天空的发光处理"
+    }
+  ]
+}

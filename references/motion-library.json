@@ -1,0 +1,877 @@
+{
+  "meta": {
+    "name": "人物动作库",
+    "version": "0.1.0",
+    "purpose": "表现不同音乐风格的角色动作。每个动作的 body 字段是可直接写进提示词的中文，不用二次改写。",
+    "organizing_principle": "按【音乐风格】分类，不按舞种。同一个人物在不同曲风里要换一整套身体逻辑，而不是换几个动作。",
+    "music_styles": [
+      "儿歌可爱",
+      "抒情慢歌",
+      "电子舞曲",
+      "古风国风",
+      "爵士摇摆",
+      "摇滚力量",
+      "民谣田园"
+    ],
+    "fields": {
+      "body": "可直接入词的中文身体描述",
+      "beats": "占几拍（4/4 拍；按你歌曲的实际拍长换算）",
+      "intensity": "1=轻 2=中 3=大",
+      "music_styles": "适用曲风",
+      "style_avoid": "在这些画风里会显得别扭，不要用",
+      "lyric_fit": "适合搭配的歌词意象"
+    },
+    "note_project_specific_removed": "原本包含四条某个具体项目（儿歌）专用的蛙类动作，已移除——那是项目私有内容。曲风「儿歌可爱」仍保留通用动作。"
+  },
+  "motions": [
+    {
+      "id": "head_circle_hands",
+      "name_cn": "双手头顶比圆",
+      "body": "双手举到头顶，指尖相对比出一个圆，停半拍再落回身侧",
+      "beats": 1,
+      "intensity": 1,
+      "mood": [
+        "可爱",
+        "点题"
+      ],
+      "music_styles": [
+        "儿歌可爱"
+      ],
+      "style_avoid": [],
+      "lyric_fit": [
+        "月亮",
+        "太阳",
+        "圆",
+        "家"
+      ],
+      "project": "该形象MV",
+      "note": "典型的儿歌手势动作，一拍的短句最合适。"
+    },
+    {
+      "id": "palm_faces",
+      "name_cn": "双手捧脸摇摆",
+      "body": "双手捧住脸颊，身体左右摇摆，面带笑意",
+      "beats": 2,
+      "intensity": 1,
+      "mood": [
+        "得意",
+        "讨喜",
+        "甜"
+      ],
+      "music_styles": [
+        "儿歌可爱",
+        "爵士摇摆"
+      ],
+      "style_avoid": [
+        "op-art",
+        "blue-green-landscape"
+      ],
+      "lyric_fit": [
+        "美",
+        "可爱",
+        "比一比"
+      ],
+      "project": "该形象MV",
+      "note": "『没有哪只该形象能比美』这类比较句专用。"
+    },
+    {
+      "id": "spin_90",
+      "name_cn": "单脚转体 90°",
+      "body": "单脚为轴，双手展开带动长袖形成水平圆盘，转动四分之一圈",
+      "beats": 1,
+      "intensity": 2,
+      "mood": [
+        "轻快",
+        "转换"
+      ],
+      "music_styles": [
+        "儿歌可爱",
+        "古风国风",
+        "爵士摇摆"
+      ],
+      "style_avoid": [
+        "op-art"
+      ],
+      "lyric_fit": [
+        "季节",
+        "方向",
+        "变化"
+      ],
+      "project": "该形象MV",
+      "note": "袖子要连成一条连续的弧线穿过多次转体，不要跟着切。"
+    },
+    {
+      "id": "spin_full",
+      "name_cn": "平转一圈",
+      "body": "单脚为轴平转一整圈，双手展开，长袖形成水平圆盘；转速均匀",
+      "beats": 4,
+      "intensity": 2,
+      "mood": [
+        "华丽",
+        "升高",
+        "炫技"
+      ],
+      "music_styles": [
+        "儿歌可爱",
+        "古风国风",
+        "电子舞曲"
+      ],
+      "style_avoid": [
+        "op-art",
+        "pixel-art"
+      ],
+      "lyric_fit": [
+        "转",
+        "四季",
+        "华丽"
+      ],
+      "project": "该形象MV",
+      "note": "一整圈要占满 4 拍，转速不匀会显得笨。"
+    },
+    {
+      "id": "clap_beat",
+      "name_cn": "拍手",
+      "body": "双手在胸前拍一下，身体跟着下沉一次",
+      "beats": 1,
+      "intensity": 1,
+      "mood": [
+        "热闹",
+        "参与感"
+      ],
+      "music_styles": [
+        "儿歌可爱",
+        "民谣田园"
+      ],
+      "style_avoid": [],
+      "lyric_fit": [
+        "伙伴",
+        "一起",
+        "开心"
+      ],
+      "project": "",
+      "note": "最安全的动作，任何画风都不出错。用来填密集的短拍。"
+    },
+    {
+      "id": "stomp",
+      "name_cn": "跺脚",
+      "body": "单脚跺地一次，身体跟着下沉，另一只脚不动",
+      "beats": 1,
+      "intensity": 2,
+      "mood": [
+        "有力",
+        "憨",
+        "强调"
+      ],
+      "music_styles": [
+        "儿歌可爱",
+        "摇滚力量"
+      ],
+      "style_avoid": [
+        "op-art",
+        "shin-hanga"
+      ],
+      "lyric_fit": [
+        "用力",
+        "生气",
+        "坚定"
+      ],
+      "project": "",
+      "note": "和拍手交替用，可以做出一整段密集的节奏动作。"
+    },
+    {
+      "id": "tiptoe",
+      "name_cn": "踮脚",
+      "body": "双脚并拢踮起，身体尽量向上拉长，手臂自然下垂",
+      "beats": 2,
+      "intensity": 1,
+      "mood": [
+        "期待",
+        "庄重",
+        "升高"
+      ],
+      "music_styles": [
+        "抒情慢歌",
+        "儿歌可爱"
+      ],
+      "style_avoid": [],
+      "lyric_fit": [
+        "等待",
+        "升起",
+        "唤醒"
+      ],
+      "project": "该形象MV",
+      "note": "唤星动作的起手，也是慢段落的基础。"
+    },
+    {
+      "id": "point_up",
+      "name_cn": "指天",
+      "body": "单臂向上伸直指向斜上方，下巴跟着抬起",
+      "beats": 1,
+      "intensity": 2,
+      "mood": [
+        "宣告",
+        "自信",
+        "点题"
+      ],
+      "music_styles": [
+        "儿歌可爱",
+        "摇滚力量"
+      ],
+      "style_avoid": [
+        "minhwa"
+      ],
+      "lyric_fit": [
+        "天空",
+        "太阳",
+        "梦想",
+        "远方"
+      ],
+      "project": "",
+      "note": "定格感强，适合切镜头前的最后一拍。"
+    },
+    {
+      "id": "wave",
+      "name_cn": "挥手",
+      "body": "单臂举到肩高，手腕左右摆动两次",
+      "beats": 2,
+      "intensity": 1,
+      "mood": [
+        "友好",
+        "打招呼",
+        "告别"
+      ],
+      "music_styles": [
+        "儿歌可爱",
+        "民谣田园"
+      ],
+      "style_avoid": [],
+      "lyric_fit": [
+        "你好",
+        "再见",
+        "我们",
+        "伙伴"
+      ],
+      "project": "",
+      "note": "打破第四面墙时最好用。"
+    },
+    {
+      "id": "bow_courtly",
+      "name_cn": "宫廷礼",
+      "body": "挺直身体、下巴抬起、右手抚胸、左脚后撤半步，身体微微前倾",
+      "beats": 4,
+      "intensity": 2,
+      "mood": [
+        "认真",
+        "笨拙的优雅",
+        "仪式"
+      ],
+      "music_styles": [
+        "儿歌可爱",
+        "古风国风"
+      ],
+      "style_avoid": [
+        "memphis-design",
+        "pixel-art"
+      ],
+      "lyric_fit": [
+        "王子",
+        "公主",
+        "贵族",
+        "正式"
+      ],
+      "project": "该形象MV",
+      "note": "反差萌的关键：动作要『很认真但有点笨』，不是真的优雅。"
+    },
+    {
+      "id": "cool_freeze",
+      "name_cn": "酷眼定格",
+      "body": "侧身站定，右手伸出两根手指横在一只眼睛前面，下巴微微抬起、嘴角往上翘；全身完全静止，只有眼神从左缓慢划到右",
+      "beats": 2,
+      "intensity": 1,
+      "mood": [
+        "装酷",
+        "得意",
+        "一秒破功"
+      ],
+      "music_styles": [
+        "儿歌可爱",
+        "电子舞曲"
+      ],
+      "style_avoid": [
+        "minhwa",
+        "blue-green-landscape"
+      ],
+      "lyric_fit": [
+        "酷",
+        "眼神",
+        "自信",
+        "比一比"
+      ],
+      "project": "该形象MV",
+      "note": "必须真的不动。任何多余晃动都会毁掉这一格。"
+    },
+    {
+      "id": "mirror_pose",
+      "name_cn": "镜像对镜",
+      "body": "身体左右两侧各出现一个镜像的自己，同步做同样的动作",
+      "beats": 4,
+      "intensity": 2,
+      "mood": [
+        "对称",
+        "比美",
+        "游戏感"
+      ],
+      "music_styles": [
+        "儿歌可爱",
+        "电子舞曲"
+      ],
+      "style_avoid": [
+        "pixel-art"
+      ],
+      "lyric_fit": [
+        "比",
+        "谁更好",
+        "两个我"
+      ],
+      "project": "该形象MV",
+      "note": "依赖画面构图，不依赖身体——动作本身要简单，否则两个会不同步。"
+    },
+    {
+      "id": "lean_in",
+      "name_cn": "前倾抢镜",
+      "body": "身体突然向前倾 15cm，脸贴近镜头，表情放大",
+      "beats": 1,
+      "intensity": 2,
+      "mood": [
+        "突袭",
+        "亲密",
+        "喜剧"
+      ],
+      "music_styles": [
+        "儿歌可爱",
+        "电子舞曲"
+      ],
+      "style_avoid": [
+        "shin-hanga",
+        "blue-green-landscape"
+      ],
+      "lyric_fit": [
+        "突然",
+        "看你",
+        "我在"
+      ],
+      "project": "该形象MV",
+      "note": "和前后两个静止镜头形成节奏对比，效果最大。"
+    },
+    {
+      "id": "lift_open",
+      "name_cn": "合十升起→开花",
+      "body": "踮起脚尖，双手从身体两侧极慢地举到头顶合十，下巴抬起、眼睛闭着；睁眼的瞬间双手打开像一朵花",
+      "beats": 8,
+      "intensity": 2,
+      "mood": [
+        "庄重",
+        "安静",
+        "仪式",
+        "唤醒"
+      ],
+      "music_styles": [
+        "抒情慢歌",
+        "古风国风"
+      ],
+      "style_avoid": [
+        "memphis-design",
+        "pop-art"
+      ],
+      "lyric_fit": [
+        "唤醒",
+        "祈祷",
+        "光",
+        "醒来",
+        "开始"
+      ],
+      "project": "该形象MV",
+      "note": "全片唯一的长慢动作，要占满 8 拍，中途不能加别的动作。"
+    },
+    {
+      "id": "peek_frame",
+      "name_cn": "掀画框",
+      "body": "伸手抓住画面边缘那条手绘的粗黑画框线，像掀帘子一样掀开，然后一脚跨出去，回头笑一下",
+      "beats": 4,
+      "intensity": 3,
+      "mood": [
+        "打破次元",
+        "出场",
+        "邀请"
+      ],
+      "music_styles": [
+        "儿歌可爱"
+      ],
+      "style_avoid": [
+        "op-art",
+        "pop-art"
+      ],
+      "lyric_fit": [
+        "来到你身边",
+        "跳出画面",
+        "我们"
+      ],
+      "project": "该形象MV",
+      "note": "要看得像小孩在掀一张真的纸，不要做成特效。配最强的一拍。"
+    },
+    {
+      "id": "hands_on_hips_sway",
+      "name_cn": "双手叉腰摇摆",
+      "body": "双手叉腰，双脚交替点地，身体画出横着的 8 字",
+      "beats": 2,
+      "intensity": 1,
+      "mood": [
+        "日常",
+        "温暖",
+        "放松"
+      ],
+      "music_styles": [
+        "民谣田园",
+        "爵士摇摆",
+        "儿歌可爱"
+      ],
+      "style_avoid": [],
+      "lyric_fit": [
+        "伙伴",
+        "陪伴",
+        "生活",
+        "我们"
+      ],
+      "project": "该形象MV",
+      "note": "最『生活』的一档，慢段落的默认动作。"
+    },
+    {
+      "id": "arms_rise_slow",
+      "name_cn": "双臂缓慢升起",
+      "body": "双臂从身体两侧极慢地升到水平或斜上方，掌心向上，呼吸带动",
+      "beats": 8,
+      "intensity": 1,
+      "mood": [
+        "抒情",
+        "舒展",
+        "释放"
+      ],
+      "music_styles": [
+        "抒情慢歌",
+        "民谣田园"
+      ],
+      "style_avoid": [
+        "memphis-design"
+      ],
+      "lyric_fit": [
+        "天空",
+        "自由",
+        "风",
+        "远方"
+      ],
+      "project": "",
+      "note": "慢歌的主干动作。速度是关键，快了就俗。"
+    },
+    {
+      "id": "hands_on_chest",
+      "name_cn": "双手抚胸",
+      "body": "双手交叠放在胸前，身体微微前倾，头低一点",
+      "beats": 4,
+      "intensity": 1,
+      "mood": [
+        "真诚",
+        "内省",
+        "郑重"
+      ],
+      "music_styles": [
+        "抒情慢歌",
+        "古风国风"
+      ],
+      "style_avoid": [],
+      "lyric_fit": [
+        "心",
+        "相信",
+        "承诺",
+        "爱"
+      ],
+      "project": "",
+      "note": "和『张开双臂』是一对反义动作，用来做情绪对比。"
+    },
+    {
+      "id": "head_tilt_close",
+      "name_cn": "仰头闭眼",
+      "body": "下巴缓慢抬起，眼睛闭上，肩膀放松下沉",
+      "beats": 4,
+      "intensity": 1,
+      "mood": [
+        "沉浸",
+        "放下",
+        "等待"
+      ],
+      "music_styles": [
+        "抒情慢歌"
+      ],
+      "style_avoid": [],
+      "lyric_fit": [
+        "等待",
+        "被唤醒",
+        "安静",
+        "听"
+      ],
+      "project": "该形象MV",
+      "note": "适合配极慢的 Push In，推到脸上。"
+    },
+    {
+      "id": "slow_reach",
+      "name_cn": "缓慢伸手",
+      "body": "单臂向画面外侧缓慢伸出，手指张开，身体重心跟着移过去",
+      "beats": 4,
+      "intensity": 1,
+      "mood": [
+        "渴望",
+        "邀请",
+        "不舍"
+      ],
+      "music_styles": [
+        "抒情慢歌",
+        "民谣田园"
+      ],
+      "style_avoid": [],
+      "lyric_fit": [
+        "伸手",
+        "抓住",
+        "别走",
+        "一起"
+      ],
+      "project": "",
+      "note": "伸手的方向要和画面留白同侧，否则画面会堵。"
+    },
+    {
+      "id": "combo_four",
+      "name_cn": "四连快招",
+      "body": "四个动作连着来、每拍一个：蹲下、鼓腮、双手拨水、侧身定格",
+      "beats": 4,
+      "intensity": 3,
+      "mood": [
+        "亢奋",
+        "炫技",
+        "密集"
+      ],
+      "music_styles": [
+        "电子舞曲",
+        "儿歌可爱"
+      ],
+      "style_avoid": [
+        "shin-hanga",
+        "rimpa"
+      ],
+      "lyric_fit": [
+        "间奏",
+        "快段落",
+        "啦啦啦"
+      ],
+      "project": "该形象MV",
+      "note": "只在间奏用。密集动作要配合密集的剪辑，不要配长镜头。"
+    },
+    {
+      "id": "mechanical_lock",
+      "name_cn": "机械定格",
+      "body": "每个动作到位后完全锁死半拍，再进入下一个动作，像机器人",
+      "beats": 2,
+      "intensity": 2,
+      "mood": [
+        "冷感",
+        "机械",
+        "戏谑"
+      ],
+      "music_styles": [
+        "电子舞曲"
+      ],
+      "style_avoid": [
+        "rimpa",
+        "shin-hanga",
+        "cottagecore"
+      ],
+      "lyric_fit": [
+        "机器",
+        "重复",
+        "未来",
+        "数字"
+      ],
+      "project": "",
+      "note": "和『流畅』是对立的，一支 MV 里出现一次就够。"
+    },
+    {
+      "id": "head_whip",
+      "name_cn": "甩头",
+      "body": "头部快速甩向一侧，头发跟着甩出一个弧",
+      "beats": 1,
+      "intensity": 2,
+      "mood": [
+        "爽快",
+        "发力",
+        "打断"
+      ],
+      "music_styles": [
+        "电子舞曲",
+        "摇滚力量"
+      ],
+      "style_avoid": [
+        "shin-hanga",
+        "rimpa"
+      ],
+      "lyric_fit": [
+        "甩开",
+        "不管了",
+        "释放"
+      ],
+      "project": "",
+      "note": "长发角色才有这个动作，短发角色不要用。"
+    },
+    {
+      "id": "freeze_on_beat",
+      "name_cn": "定点定格",
+      "body": "在重拍上瞬间完全静止，保持一个姿势 2 拍不动",
+      "beats": 2,
+      "intensity": 2,
+      "mood": [
+        "酷",
+        "强调",
+        "控制"
+      ],
+      "music_styles": [
+        "电子舞曲",
+        "摇滚力量"
+      ],
+      "style_avoid": [],
+      "lyric_fit": [
+        "停",
+        "看",
+        "就是现在"
+      ],
+      "project": "该形象MV",
+      "note": "静止本身就是动作。前面越动，这一下定格越有力。"
+    },
+    {
+      "id": "sleeve_circle",
+      "name_cn": "水袖画圈",
+      "body": "双臂在身体前方画出两个交叠的圆，长袖跟着形成连续的环形轨迹",
+      "beats": 4,
+      "intensity": 2,
+      "mood": [
+        "古典",
+        "柔美",
+        "装饰"
+      ],
+      "music_styles": [
+        "古风国风",
+        "抒情慢歌"
+      ],
+      "style_avoid": [
+        "memphis-design",
+        "y2k"
+      ],
+      "lyric_fit": [
+        "水",
+        "云",
+        "舞",
+        "缠绕"
+      ],
+      "project": "该形象MV",
+      "note": "长袖角色的招牌动作，袖子的轨迹就是画面的主角。"
+    },
+    {
+      "id": "cloud_hands",
+      "name_cn": "云手",
+      "body": "双手在身前交替划出圆弧，身体随之缓慢转动，重心在两脚之间转移",
+      "beats": 4,
+      "intensity": 1,
+      "mood": [
+        "沉静",
+        "内敛",
+        "流动"
+      ],
+      "music_styles": [
+        "古风国风"
+      ],
+      "style_avoid": [
+        "memphis-design",
+        "pop-art"
+      ],
+      "lyric_fit": [
+        "静",
+        "气",
+        "山水",
+        "流转"
+      ],
+      "project": "",
+      "note": "配横移长卷最好，人不动、画面动。"
+    },
+    {
+      "id": "figure_eight",
+      "name_cn": "横 8 字",
+      "body": "胯部画出横着的 8 字，双肩反向补偿，双脚交替点地",
+      "beats": 2,
+      "intensity": 2,
+      "mood": [
+        "摇摆",
+        "慵懒",
+        "自信"
+      ],
+      "music_styles": [
+        "爵士摇摆",
+        "儿歌可爱"
+      ],
+      "style_avoid": [
+        "minhwa",
+        "pixel-art"
+      ],
+      "lyric_fit": [
+        "摇摆",
+        "节奏",
+        "随意"
+      ],
+      "project": "该形象MV",
+      "note": "慢摇的基本动作，配 Static 或轻微手持。"
+    },
+    {
+      "id": "sidestep_touch",
+      "name_cn": "侧滑点地",
+      "body": "单脚向侧方滑出一步，另一只脚跟上点地，身体跟着侧移",
+      "beats": 2,
+      "intensity": 1,
+      "mood": [
+        "轻快",
+        "行进"
+      ],
+      "music_styles": [
+        "爵士摇摆",
+        "儿歌可爱"
+      ],
+      "style_avoid": [
+        "op-art"
+      ],
+      "lyric_fit": [
+        "走",
+        "去",
+        "路上"
+      ],
+      "project": "",
+      "note": "配 Tracking 跟拍，人物在画面里的位置保持不变。"
+    },
+    {
+      "id": "big_leap",
+      "name_cn": "大跳",
+      "body": "屈膝蓄力后纵身跃起，双手向后展开，身体在空中划出一道弧线",
+      "beats": 4,
+      "intensity": 3,
+      "mood": [
+        "爆发",
+        "壮阔",
+        "高光"
+      ],
+      "music_styles": [
+        "摇滚力量",
+        "抒情慢歌",
+        "儿歌可爱"
+      ],
+      "style_avoid": [
+        "rimpa",
+        "minhwa",
+        "op-art"
+      ],
+      "lyric_fit": [
+        "越过",
+        "飞",
+        "远方",
+        "夕阳"
+      ],
+      "project": "该形象MV",
+      "note": "全片配最强的一拍。空中那一帧是天然的剪影位。"
+    },
+    {
+      "id": "arms_spread",
+      "name_cn": "张开双臂",
+      "body": "双臂向两侧完全打开，胸腔打开，下巴抬起",
+      "beats": 4,
+      "intensity": 2,
+      "mood": [
+        "释放",
+        "拥抱",
+        "宏大"
+      ],
+      "music_styles": [
+        "摇滚力量",
+        "抒情慢歌"
+      ],
+      "style_avoid": [],
+      "lyric_fit": [
+        "世界",
+        "拥抱",
+        "自由",
+        "全部"
+      ],
+      "project": "",
+      "note": "最通用的『大』动作，容错极高。"
+    }
+  ],
+  "style_motion_policy": {
+    "_source": "从 art-aesthetic-vault 各流派卡的『情绪』与『构图』层推出的兼容性判断；属于设计意见，不是库内数据",
+    "op-art": {
+      "allow_intensity": 1,
+      "reason": "她必须静止，只有头能动"
+    },
+    "shin-hanga": {
+      "allow_intensity": 2,
+      "reason": "氛围风景画，大动作会破坏孤独感"
+    },
+    "rimpa": {
+      "allow_intensity": 2,
+      "reason": "屏风画，动作应横向展开而非爆发"
+    },
+    "superflat": {
+      "allow_intensity": 2,
+      "reason": "图案是主角，人物动作要让位"
+    },
+    "art-nouveau": {
+      "allow_intensity": 1,
+      "reason": "装饰在生长，人物只需缓慢升起"
+    },
+    "pop-art": {
+      "allow_intensity": 1,
+      "reason": "她必须真的不动"
+    },
+    "memphis-design": {
+      "allow_intensity": 3,
+      "reason": "活泼到有点吵是它的要求"
+    },
+    "y2k": {
+      "allow_intensity": 3,
+      "reason": "展示式的旋转，动得越程式化越对"
+    },
+    "minhwa": {
+      "allow_intensity": 2,
+      "reason": "天真憨态，不要技术感"
+    },
+    "naive-art": {
+      "allow_intensity": 2,
+      "reason": "笨拙而均匀，不要有机的流畅"
+    },
+    "cottagecore": {
+      "allow_intensity": 1,
+      "reason": "慢而温柔，不要任何戏剧性"
+    },
+    "blue-green-landscape": {
+      "allow_intensity": 2,
+      "reason": "游观，镜头动人不猛动"
+    },
+    "anime-cel": {
+      "allow_intensity": 3,
+      "reason": "主世界，动作幅度最大"
+    },
+    "pixel-art": {
+      "allow_intensity": 2,
+      "reason": "低帧率，动作要卡顿、块状"
+    }
+  }
+}

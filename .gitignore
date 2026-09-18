@@ -1,0 +1,26 @@
+# 运行时产物：绝不提交（里面会有用户的音乐、人物图、生成的视频与尾帧）
+workspace/
+output/
+input/music/
+input/character/
+input/lyrics/
+!input/README.txt
+
+# 交付包
+交付包/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# 编辑器
+.idea/
+.vscode/
+*.swp

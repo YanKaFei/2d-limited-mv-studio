@@ -1,0 +1,232 @@
+# mv-prism · 多风格融合舞蹈影像导演 · 默认配置
+# 这里只有「可调参数」。导演判断在 SKILL.md 和 references/ 里。
+
+project:
+  name: "mv-prism"
+  version: "1.0.0"
+  skill_name: "mv-prism"
+
+# ---------------------------------------------------------------- 输入闸门
+audio:
+  extensions: [.mp3, .wav, .flac, .m4a, .aac, .ogg]
+  max_duration_sec: 180        # > 180s = 失败，要求用户先切歌。绝不自动截断。
+  min_duration_sec: 5
+  auto_trim: false             # 永不自动截断用户音乐
+
+image:
+  extensions: [.png, .jpg, .jpeg, .webp]
+  character_hints: [character, reference, canon, ref, 角色, 人物, 人设, 参考, 三视图, turnaround]
+
+lyrics:
+  source_priority: [embedded, lrc, srt, vtt, txt, asr]
+  asr_model: small
+  prefer_vocal_separation: true
+  allow_estimated_timeline: true
+  keep_original_language: true
+  asr_must_be_reviewed: true   # 实测 ASR 会把「王子」转成「滑走」→ 一律标 [ASR uncertain]
+
+# ---------------------------------------------------------------- 生成单元（14.5 秒）
+segment:
+  target_seconds: 14.5
+  hard_max_seconds: 15.0       # MiniMax H3 单条上限（官方）
+  min_seconds: 4.0             # MiniMax H3 单条下限（官方）
+  bar_snap: true
+  snap_tolerance_beats: 1.5
+  beat_snap_fallback: true
+  tail_pad: true
+  allow_lyric_carry_over: true
+  max_prompts: 13              # ceil(180 / 14.5)
+
+# ---------------------------------------------------------------- 风格融合
+style:
+  min_distinct_styles: 3       # 一条 MV 至少穿越的画风数
+  route_menu_size: 4
+  max_movements_per_segment: 2
+  # 注意：项目自带的 miniyaml 不支持**跨行的** flow 序列（[a, b,\n c] 会变成一个字符串）。
+  # 所以长列表一律用 block 序列。
+  fallback_mediums:
+    - graphite
+    - colored pencil
+    - charcoal
+    - ink
+    - risograph
+    - xerox
+    - screen print
+    - halftone
+    - paper collage
+    - cut paper
+    - hard-edge abstraction
+    - constructivist composition
+    - editorial grid
+    - color field
+    - brush line
+    - misregistration
+    - newsprint
+
+# ---------------------------------------------------------------- 目录
+paths:
+  input_music: input/music
+  input_character: input/character
+  input_lyrics: input/lyrics
+  workspace_audio: workspace/audio
+  workspace_lyrics: workspace/lyrics
+  workspace_character: workspace/character
+  workspace_analysis: workspace/analysis
+  workspace_segments: workspace/segments
+  workspace_frames: workspace/frames
+  workspace_temp: workspace/temp
+  output_latest: output/latest
+  output_archive: output/archive
+
+# ---------------------------------------------------------------- 输出契约
+output:
+  files:
+    - minimax_h3_prompts.md
+    - storyboard.md
+    - threeview.md
+    - style_routes.md
+    - music_analysis.md
+    - lyrics_timeline.md
+    - character_canon.md
+    - run_summary.md
+  h3_routes: [mv, ref, i2va, t2va]
+  # Ref2VA 六段（官方，顺序固定）
+  h3_ref_sections:
+    - "subject_definitions:"
+    - "summary:"
+    - "retention_analysis:"
+    - "detailed_description:"
+    - "overall_soundscape:"
+    - "non_diegetic_music:"
+  # 每条 prompt 前的中文导演简报（给人看，不粘贴进模型）
+  brief_fields:
+    - "段落"
+    - "乐句时间窗"
+    - "对应歌词"
+    - "本段歌词核心意义"
+    - "背景里的歌词元素"
+    - "舞蹈与歌词的绑定"
+    - "运镜（官方词 + 幅度 + 速度）"
+    - "动画机制（2D 限制感）"
+    - "承上 / 启下"
+  # 画风必含词（2D 限制感，不许漂成实拍/3D）
+  style_required_words:
+    - "2D"
+    - "limited animation"
+    - "hand-drawn"
+    - "flat composition"
+  style_forbidden:
+    - "neon city"
+    - "cyberpunk"
+    - "magic butterflies"
+    - "galaxy"
+    - "particle vortex"
+    - "lens flare"
+    - "3D orbit"
+    - "360 camera"
+    - "drone shot"
+    - "FPV"
+    - "rapid fly-through"
+    - "spiraling camera"
+    - "depth of field"
+    - "photorealistic"
+    - "hyperrealistic"
+  canon_required_phrases:
+    - "character reference"
+    - "fully_preserved"
+    - "the only character"
+  drift_forbidden_in_body:
+    - "different hairstyle"
+    - "hair color change"
+    - "costume redesign"
+    - "character redesign"
+    - "face change"
+    - "age shift"
+    - "different character"
+  # MiniMax H3 官方运镜词表（不得自造）
+  camera_official_terms:
+    - "Zoom In"
+    - "Zoom Out"
+    - "Push In"
+    - "Pull Out"
+    - "Pan Left"
+    - "Pan Right"
+    - "Truck Left"
+    - "Truck Right"
+    - "Tilt Up"
+    - "Tilt Down"
+    - "Pedestal Up"
+    - "Pedestal Down"
+    - "Arc Shot"
+    - "Tracking Shot"
+    - "Static Shot"
+    - "Shake Slightly"
+    - "Shake Strongly"
+    - "POV"
+    - "Roll Clockwise"
+    - "Roll Counterclockwise"
+  camera_amplitude: ["with small amplitude", "with large amplitude"]
+  camera_speed: ["at slow speed", "at fast speed"]
+  camera_2d_allowed:
+    - "Static Shot"
+    - "Push In"
+    - "Pull Out"
+    - "Zoom In"
+    - "Zoom Out"
+    - "Pan Left"
+    - "Pan Right"
+    - "Truck Left"
+    - "Truck Right"
+    - "Tilt Up"
+    - "Tilt Down"
+    - "Pedestal Up"
+    - "Pedestal Down"
+    - "Roll Clockwise"
+    - "Roll Counterclockwise"
+  camera_compound:
+    - ["Arc Shot", "Push In"]
+    - ["Pedestal Up", "Pull Out"]
+    - ["Arc Shot", "Pedestal Up"]
+  prompt_max_chars: 7000
+  # 歌词原文是否作为平面字体元素出现在背景里（先锋 2D 的合法手法，也最直接满足
+  # 「歌词元素要进背景」这条硬要求）。--no-lyric-text 可关。
+  lyric_typography: true
+
+# ---------------------------------------------------------------- 尾帧延续
+chain:
+  enabled: true
+  # 上一段尾帧作为下一段首帧 —— 前多少秒「延续上一帧」再转场到本段新画风
+  continue_seconds: 1.5
+  # 现场经验（未官方证实，见 references/platform-playbook.md）：首尾帧之间垂直位移
+  # 超过画面高度 12% 时容易肢体撕裂。所以续接段**不要换姿势**，只做连续动作。
+  max_vertical_displacement_ratio: 0.12
+  extractor_chain: [ffmpeg, avfoundation, platform-export]
+
+# ---------------------------------------------------------------- 平台
+platform:
+  default: xiaoyunque
+  known: [xiaoyunque, minimax-design, generic]
+
+# ---------------------------------------------------------------- 三视图
+threeview:
+  views: [front, three-quarter, side, back]
+  extra: [head close-up, colour chart]
+  background: "neutral flat grey, no scenery"
+  pose: "relaxed A-pose, arms slightly away from the body"
+  layout: "equal panels in one row, identical scale, feet aligned to a common baseline"
+  line_consistency: "single consistent line weight, identical rendering pass across all views"
+
+# ---------------------------------------------------------------- 外部依赖
+external:
+  artvault_repo: "~/Desktop/art-aesthetic-vault/.repo"
+  artvault_python: "python3"
+  artvault_required: false
+
+# ---------------------------------------------------------------- 降级声明
+fallbacks:
+  ffprobe: ["afinfo", "pure-python"]
+  ffmpeg: ["afconvert", "source-wav"]
+  demucs: ["direct-asr"]
+  whisperx: ["faster-whisper", "mlx-whisper", "openai-whisper", "manual-lyrics"]
+  librosa: ["numpy", "audioop-envelope", "duration-only"]
+  artvault: ["references/art-medium-map.md"]
