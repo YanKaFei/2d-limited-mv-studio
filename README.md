@@ -18,7 +18,7 @@
 [![Dependencies](https://img.shields.io/badge/dependencies-zero-8A9BA8)](#requirements)
 [![Camera](https://img.shields.io/badge/camera-2D%20limited%20%C2%B7%20no%203D-6B4FBB)](#the-camera-never-leaves-the-paper)
 
-[English](#english) · [中文](#中文) · [Quick start](#quick-start) · [Platforms](#platforms) · [Endings](#the-last-gesture)
+[中文](README.md) · [English](README.en.md) · [한국어](README.ko.md) · [日本語](README.ja.md) · [Français](README.fr.md)
 
 </div>
 
