@@ -585,3 +585,7 @@ MIT — see [LICENSE](LICENSE).
 - [2D Limited MV Studio](https://github.com/YanKaFei/2d-limited-mv-studio) — 2D anime MV prompt package
 - [Virtual Heroine Atlas](https://github.com/YanKaFei/virtual-heroine-atlas) — virtual character design research
 - [SmartStaff AI](https://github.com/YanKaFei/smartstaff-ai-deepseek-plugin) — restaurant workforce SaaS test framework
+
+## 30-second demo
+
+[Watch the 30-second typographic demo](demo-30s.mp4) · [Social preview](social-preview.jpg)
